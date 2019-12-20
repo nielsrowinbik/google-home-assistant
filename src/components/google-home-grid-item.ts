@@ -40,7 +40,7 @@ export class GoogleHomeGridItem extends LitElement {
 
     protected render = (): TemplateResult => {
         const actions = this._config?.actions
-            ? this._config?.actions?.slice(0, 1)
+            ? this._config?.actions?.slice(0, 2)
             : [];
         const entity = this.hass?.states[this._config!.entity];
         const isMdiIcon = this._config?.icon.startsWith('mdi:');
