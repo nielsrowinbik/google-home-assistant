@@ -4,15 +4,15 @@ Turn your Home Assistant interface into something that closely resembles the Goo
 
 ## Usage
 
-Install `google-home-assistant` as a `module`:
+Install `google-home-assistant` as a `module`. You can find the latest release in the `dist` folder.
 
 ```yaml
 resources:
-    - url: /local/google-home-assistant
+    - url: /local/js/google-home.js
       type: module
 ```
 
-Set up your `lovelace-ui.yaml` with a panel view, and wrap the `google-home-assistant` cards in a `vertical-stack-card`:
+Set up your `lovelace-ui.yaml` with a panel view, and wrap the `google-home-assistant` cards in a `vertical-stack-card`.
 
 ```yaml
 views:
