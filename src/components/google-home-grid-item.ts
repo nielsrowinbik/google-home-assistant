@@ -22,6 +22,12 @@ export class GoogleHomeGridItem extends LitElement {
         // TODO: Evaluate configuration
         if (!config) throw new Error('Invalid configuration');
 
+        if (config && config.actions && config.actions.length > 2) {
+            console.warn(
+                'More than 2 actions specified. Only the first two will be rendered.'
+            );
+        }
+
         if (!this.hass) provideHass(this);
         this._config = config;
     };
@@ -33,6 +39,9 @@ export class GoogleHomeGridItem extends LitElement {
     };
 
     protected render = (): TemplateResult => {
+        const actions = this._config?.actions
+            ? this._config?.actions?.slice(0, 1)
+            : [];
         const entity = this.hass?.states[this._config!.entity];
         const isMdiIcon = this._config?.icon.startsWith('mdi:');
 
@@ -52,21 +61,17 @@ export class GoogleHomeGridItem extends LitElement {
                     </h4>
                 </button>
                 <ul class="actions">
-                    ${this._config?.actions?.map(
-                        ({ label, state, service }) => {
-                            if (!state || entity?.state === state)
-                                return html`
-                                    <button
-                                        @click=${this._handleActionClick(
-                                            service
-                                        )}
-                                    >
-                                        ${label}
-                                    </button>
-                                `;
-                            return html``;
-                        }
-                    )}
+                    ${actions.map(({ label, state, service }) => {
+                        if (!state || entity?.state === state)
+                            return html`
+                                <button
+                                    @click=${this._handleActionClick(service)}
+                                >
+                                    ${label}
+                                </button>
+                            `;
+                        return html``;
+                    })}
                 </ul>
             </div>
         `;

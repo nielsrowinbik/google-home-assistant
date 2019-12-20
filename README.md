@@ -76,13 +76,13 @@ The module enables the following cards (click for their configuration options):
 
 ### `google-home-grid-item` configuration options
 
-| Name    | Type   | Requirement  | Description                                                    | Default |
-| ------- | ------ | ------------ | -------------------------------------------------------------- | ------- |
-| type    | string | **Required** | `custom:google-home-grid-item`                                 |         |
-| entity  | string | **Required** | Home Assistant Entity ID                                       |         |
-| icon    | string | **Required** | Reference to a Material Design icon or an image                |         |
-| name    | string | Optional     | Override the entity's friendly name                            |         |
-| actions | list   | Optional     | List of actions to display below the grid item (options below) |         |
+| Name    | Type   | Requirement  | Description                                                                    | Default |
+| ------- | ------ | ------------ | ------------------------------------------------------------------------------ | ------- |
+| type    | string | **Required** | `custom:google-home-grid-item`                                                 |         |
+| entity  | string | **Required** | Home Assistant Entity ID                                                       |         |
+| icon    | string | **Required** | Reference to a Material Design icon or an image                                |         |
+| name    | string | Optional     | Override the entity's friendly name                                            |         |
+| actions | list   | Optional     | List of actions to display below the grid item (options below), maximum of two |         |
 
 Grid item action options:
 
