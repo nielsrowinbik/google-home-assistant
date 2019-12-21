@@ -46,6 +46,11 @@ export class GoogleHomeGrid extends LitElement {
 
     static get styles(): CSSResult {
         return css`
+            :host {
+                /* Override margin added by any of the stack cards this card may be used inside of */
+                margin: 0 10px !important;
+            }
+
             #wrapper {
                 border-top: 1px solid var(--divider-color, #dadce0);
                 margin: 0 auto;
