@@ -42,8 +42,8 @@ export const getDerivedStyles = (color?: Color) => {
         case 'none':
         default:
             return css`
-                color: #616161;
-                border: 1px solid #dadce0;
+                color: #5f6268;
+                border: 1px solid #acb1b7;
             `;
     }
 };

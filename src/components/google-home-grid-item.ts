@@ -1,4 +1,4 @@
-import { fireEvent, HomeAssistant } from 'custom-card-helpers';
+import { fireEvent, HomeAssistant, computeDomain } from 'custom-card-helpers';
 import {
     css,
     CSSResult,
@@ -42,8 +42,10 @@ export class GoogleHomeGridItem extends LitElement {
         const actions = this._config?.actions
             ? this._config?.actions?.slice(0, 2)
             : [];
-        const entity = this.hass?.states[this._config!.entity];
+        const entityId = this._config!.entity;
+        const entity = this.hass?.states[entityId];
         const isMdiIcon = this._config?.icon.startsWith('mdi:');
+        const isGroup = computeDomain(entityId) === 'group';
 
         return html`
             <div id="wrapper">
@@ -61,18 +63,30 @@ export class GoogleHomeGridItem extends LitElement {
                     </h4>
                 </button>
                 <ul class="actions">
-                    ${actions.map(({ label, state, service }) => {
-                        if (!state || entity?.state === state)
-                            return html`
+                    ${actions.map(({ label, state, service }, i) => {
+                        if (!state || entity?.state === state) {
+                            const button = html`
                                 <button
                                     @click=${this._handleActionClick(service)}
                                 >
                                     ${label}
                                 </button>
                             `;
+                            if (i % 2 !== 0)
+                                return html`
+                                    <span></span>
+                                    ${button}
+                                `;
+                            return button;
+                        }
                         return html``;
                     })}
                 </ul>
+                <span class="badge"
+                    >${isGroup
+                        ? entity?.attributes.entity_id.length
+                        : html``}</span
+                >
             </div>
         `;
     };
@@ -114,16 +128,18 @@ export class GoogleHomeGridItem extends LitElement {
             #wrapper {
                 display: flex;
                 flex-direction: column;
+                position: relative;
             }
 
             #wrapper > button img {
                 height: 100%;
                 max-height: 50%;
-                max-width: 76px;
+                max-width: 70px;
                 width: 100%;
             }
 
             #wrapper > button h4 {
+                color: #131313;
                 font-family: 'Product Sans';
                 font-size: 1.1rem;
                 font-weight: 400;
@@ -135,7 +151,7 @@ export class GoogleHomeGridItem extends LitElement {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: nowrap;
-                height: 22px;
+                height: 16px;
                 justify-content: space-around;
                 list-style: none;
                 max-width: 170px;
@@ -147,8 +163,34 @@ export class GoogleHomeGridItem extends LitElement {
             .actions button {
                 color: #4285f4;
                 flex: 0;
-                font-size: 1.1rem;
+                font-size: 0.95rem;
                 font-weight: 500;
+            }
+
+            .actions span {
+                background-color: #dadce0;
+                border-radius: 100%;
+                height: 3px;
+                width: 3px;
+            }
+
+            .badge {
+                border: 1px solid #dadce0;
+                border-radius: 100%;
+                color: #131313;
+                font-family: 'Product Sans';
+                font-size: 1.1rem;
+                height: 24px;
+                line-height: 24px;
+                position: absolute;
+                right: calc(50% - 64px);
+                text-align: center;
+                top: 0;
+                width: 24px;
+            }
+
+            .badge:empty {
+                display: none;
             }
         `;
     }

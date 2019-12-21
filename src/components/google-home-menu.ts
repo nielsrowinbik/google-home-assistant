@@ -40,16 +40,22 @@ export class GoogleHomeMenu extends LitElement {
 
     static get styles(): CSSResult {
         return css`
+            :host {
+                /* Override margin added by any of the stack cards this card may be used inside of */
+                margin: 0 10px !important;
+            }
+
             #wrapper {
                 margin: 0 auto;
                 max-width: 960px;
-                padding: 0 0 20px 0;
             }
 
             h1 {
+                color: #131313;
                 font-family: 'Product Sans';
                 font-size: 32px;
                 font-weight: 400;
+                margin: 0;
                 text-align: center;
             }
 
@@ -62,10 +68,7 @@ export class GoogleHomeMenu extends LitElement {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-            }
-
-            .flex > * {
-                flex: 0 0 96px;
+                padding: 20px 0;
             }
         `;
     }

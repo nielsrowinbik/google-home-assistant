@@ -93,12 +93,12 @@ export class GoogleHomeMenuItem extends LitElement {
                 font-family: 'Product Sans';
                 font-size: 0.9rem;
                 flex-direction: column;
-                height: 96px;
+                height: 90px;
                 justify-content: center;
                 margin: 0 auto;
                 outline: none;
                 padding: 0;
-                width: 96px;
+                width: 90px;
             }
 
             ha-icon {
@@ -107,6 +107,7 @@ export class GoogleHomeMenuItem extends LitElement {
             }
 
             span {
+                color: #616870;
                 margin-top: 6px;
             }
         `;

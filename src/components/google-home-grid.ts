@@ -52,7 +52,7 @@ export class GoogleHomeGrid extends LitElement {
             }
 
             #wrapper {
-                border-top: 1px solid var(--divider-color, #dadce0);
+                border-top: 1px solid #dadce0;
                 margin: 0 auto;
                 max-width: 960px;
                 padding: 20px 0;
@@ -61,19 +61,21 @@ export class GoogleHomeGrid extends LitElement {
             h2,
             h3 {
                 font-family: 'Product Sans';
-                margin: 6px 0 0;
                 text-align: center;
             }
 
             h2 {
+                color: #131313;
                 font-size: 1.4rem;
                 font-weight: 500;
+                margin: 0;
             }
 
             h3 {
-                color: var(--secondary-text-color);
-                font-size: 0.9rem;
+                color: #616870;
+                font-size: 0.95rem;
                 font-weight: 400;
+                margin: 6px 0 0;
             }
 
             h2:empty,
@@ -86,7 +88,7 @@ export class GoogleHomeGrid extends LitElement {
                 grid-template-columns: repeat(2, minmax(1px, 250px));
                 gap: 24px 20px;
                 justify-content: center;
-                padding: 20px 20px 0;
+                padding: 14px 20px 0;
             }
         `;
     }
