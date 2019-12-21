@@ -3,7 +3,7 @@ import typescript from 'rollup-plugin-typescript2';
 import serve from 'rollup-plugin-serve';
 
 export default {
-    input: ['src/google-home.ts'],
+    input: ['src/google-home-assistant.ts'],
     output: {
         dir: './dist',
         format: 'es',

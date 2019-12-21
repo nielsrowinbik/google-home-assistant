@@ -8,7 +8,7 @@ Install `google-home-assistant` as a `module`. You can find the latest release i
 
 ```yaml
 resources:
-    - url: /local/js/google-home.js
+    - url: /local/js/google-home-assistant.js
       type: module
 ```
 
