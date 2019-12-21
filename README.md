@@ -1,10 +1,12 @@
 # google-home-assistant
 
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nielsrowinbik/google-home-assistant)
+
 Turn your Home Assistant interface into something that closely resembles the Google Home app using this set of custom Lovelace components.
 
 ## Usage
 
-Install `google-home-assistant` as a `module`. You can find the latest release in the `dist` folder.
+Install `google-home-assistant` as a `module`.
 
 ```yaml
 resources:
