@@ -3,7 +3,7 @@
     "version": "0.3.0",
     "description": "Lovelace Google Home Assistant",
     "module": "google-home-assistant.js",
-    "repository": "git@github.com:nielsrowinbik/lovelace-google-home-assistant.git",
+    "repository": "git@github.com:nielsrowinbik/google-home-assistant.git",
     "author": "Niels Bik <hey@nielsbik.nl>",
     "license": "MIT",
     "dependencies": {
