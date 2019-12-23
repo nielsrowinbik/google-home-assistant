@@ -1,4 +1,9 @@
-import { fireEvent, HomeAssistant, computeDomain } from 'custom-card-helpers';
+import {
+    handleClick,
+    hasConfigOrEntityChanged,
+    HomeAssistant,
+    computeDomain,
+} from 'custom-card-helpers';
 import {
     css,
     CSSResult,
@@ -26,11 +31,8 @@ export class GoogleHomeGridItem extends LitElement {
         this._config = config;
     };
 
-    protected shouldUpdate = (changedProperties: PropertyValues) => {
-        // TODO: Determine whether the entity that is being rendered has changed.
-        const oldHass = changedProperties.get('hass');
-        return true;
-    };
+    protected shouldUpdate = (changedProps: PropertyValues) =>
+        hasConfigOrEntityChanged(this, changedProps, false);
 
     protected render = (): TemplateResult => {
         const entityId = this._config!.entity;
@@ -40,7 +42,11 @@ export class GoogleHomeGridItem extends LitElement {
                   ?.filter(({ state }) => !state || entity?.state === state)
                   .slice(0, 2)
             : [];
-        const isMdiIcon = this._config?.icon.startsWith('mdi:');
+
+        const icon = this._config?.icon || entity?.attributes.icon;
+        const name = this._config?.name || entity?.attributes.friendly_name;
+
+        const isMdiIcon = icon!.startsWith('mdi:');
         const isGroup = computeDomain(entityId) === 'group';
 
         return html`
@@ -48,14 +54,13 @@ export class GoogleHomeGridItem extends LitElement {
                 <button @click=${this._handleButtonClick} type="button">
                     ${isMdiIcon
                         ? html`
-                              <ha-icon icon=${this._config?.icon}></ha-icon>
+                              <ha-icon icon=${icon}></ha-icon>
                           `
                         : html`
-                              <img src=${this._config?.icon} />
+                              <img src=${icon} />
                           `}
                     <h4>
-                        ${this._config?.name ||
-                            entity?.attributes.friendly_name}
+                        ${name}
                     </h4>
                 </button>
                 <ul class="actions">
@@ -83,18 +88,7 @@ export class GoogleHomeGridItem extends LitElement {
     };
 
     private _handleButtonClick = () =>
-        fireEvent(
-            this,
-            'hass-more-info',
-            {
-                entityId: this._config!.entity,
-            },
-            {
-                bubbles: true,
-                cancelable: false,
-                composed: true,
-            }
-        );
+        handleClick(this, this.hass!, this._config!, false, false);
 
     private _handleActionClick = (serviceString: string) => {
         const entityId = this._config!.entity;
