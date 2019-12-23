@@ -1,6 +1,18 @@
-import { ActionConfig, LovelaceCardConfig } from 'custom-card-helpers';
+import {
+    LovelaceCardConfig,
+    MoreInfoActionConfig,
+    NavigateActionConfig,
+    NoActionConfig,
+    UrlActionConfig,
+} from 'custom-card-helpers';
 
-export type Color =
+export declare type ActionConfig =
+    | MoreInfoActionConfig
+    | NavigateActionConfig
+    | NoActionConfig
+    | UrlActionConfig;
+
+export declare type Color =
     | 'blue'
     | 'cyan'
     | 'green'
@@ -20,6 +32,7 @@ export interface GoogleHomeMenuItemConfig {
     icon: string;
     color?: Color;
     name?: string;
+    tap_action?: ActionConfig;
 }
 
 export interface GoogleHomeGridConfig {

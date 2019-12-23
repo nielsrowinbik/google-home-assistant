@@ -1,8 +1,6 @@
 import {
-    ActionHandlerEvent,
-    fireEvent,
-    handleAction,
-    hasAction,
+    handleClick,
+    hasConfigOrEntityChanged,
     HomeAssistant,
 } from 'custom-card-helpers';
 import {
@@ -33,21 +31,20 @@ export class GoogleHomeMenuItem extends LitElement {
                 `Invalid configuration: field \`entity\`is required`
             );
 
-        if (!config.icon)
-            throw new Error(`Invalid configuration: field \`icon\`is required`);
-
         if (!this.hass) provideHass(this);
         this._config = config;
     };
 
-    protected shouldUpdate = (changedProperties: PropertyValues) => {
-        // TODO: Determine whether the entity that is being rendered has changed.
-        const oldHass = changedProperties.get('hass');
-        return true;
-    };
+    protected shouldUpdate = (changedProps: PropertyValues) =>
+        hasConfigOrEntityChanged(this, changedProps, false);
 
     protected render = (): TemplateResult | void => {
         const derivedStyles = getDerivedStyles(this._config?.color);
+        const entityId = this._config!.entity;
+        const entity = this.hass?.states[entityId];
+
+        const icon = this._config?.icon || entity?.attributes.icon;
+        const name = this._config?.name || entity?.attributes.friendly_name;
 
         return html`
             <button
@@ -55,32 +52,14 @@ export class GoogleHomeMenuItem extends LitElement {
                 data-color=${this._config?.color}
                 type="button"
             >
-                <ha-icon
-                    icon=${this._config?.icon}
-                    style=${derivedStyles}
-                ></ha-icon>
-                <span
-                    >${this._config?.name ||
-                        this.hass?.states[this._config?.entity as string]
-                            .attributes.friendly_name}</span
-                >
+                <ha-icon icon=${icon} style=${derivedStyles}></ha-icon>
+                <span>${name}</span>
             </button>
         `;
     };
 
     private _handleClick = () =>
-        fireEvent(
-            this,
-            'hass-more-info',
-            {
-                entityId: this._config!.entity,
-            },
-            {
-                bubbles: true,
-                cancelable: false,
-                composed: true,
-            }
-        );
+        handleClick(this, this.hass!, this._config!, false, false);
 
     static get styles(): CSSResult {
         return css`
