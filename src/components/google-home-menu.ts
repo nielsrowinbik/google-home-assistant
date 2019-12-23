@@ -55,7 +55,7 @@ export class GoogleHomeMenu extends LitElement {
                 font-family: 'Product Sans';
                 font-size: 32px;
                 font-weight: 400;
-                margin: 0;
+                margin: 20px 0;
                 text-align: center;
             }
 
@@ -68,7 +68,7 @@ export class GoogleHomeMenu extends LitElement {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                padding: 20px 0;
+                margin: 20px 0;
             }
         `;
     }

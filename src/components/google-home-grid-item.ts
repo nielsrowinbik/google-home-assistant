@@ -161,8 +161,8 @@ export class GoogleHomeGridItem extends LitElement {
             .actions span {
                 background-color: #dadce0;
                 border-radius: 100%;
-                height: 3px;
-                width: 3px;
+                height: 4px;
+                width: 4px;
             }
 
             .badge {
