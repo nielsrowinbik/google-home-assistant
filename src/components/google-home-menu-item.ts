@@ -14,7 +14,7 @@ import {
     PropertyValues,
 } from 'lit-element';
 
-import { GoogleHomeMenuItemConfig } from '../types';
+import { allowedColors, GoogleHomeMenuItemConfig } from '../types';
 import { getDerivedStyles, provideHass } from '../util';
 
 @customElement('google-home-menu-item')
@@ -23,12 +23,27 @@ export class GoogleHomeMenuItem extends LitElement {
     @property() private _config?: GoogleHomeMenuItemConfig;
 
     public setConfig = (config: GoogleHomeMenuItemConfig) => {
-        // TODO: Evaluate configuration
+        // Check if a configuration is provided at all
         if (!config) throw new Error('Invalid configuration');
 
-        if (!config.entity)
+        // Check if entity has been set correctly
+        if (typeof config.entity !== 'string')
             throw new Error(
-                `Invalid configuration: field \`entity\`is required`
+                'Invalid configuration: field `entity` is required and should be of type `string`'
+            );
+
+        // Check if specified color is allowed
+        if (config.color && !allowedColors.includes(config.color))
+            throw new Error(
+                `Invalid configuration: field \`color\ should be one of: ${allowedColors
+                    .map(color => `\`${color}\``)
+                    .join(', ')}`
+            );
+
+        // Check if specified icon is correct
+        if (config.icon && !config.icon.startsWith('mdi:'))
+            throw new Error(
+                `Invalid configuration: field \`icon\ should start with \`mdi:\``
             );
 
         if (!this.hass) provideHass(this);

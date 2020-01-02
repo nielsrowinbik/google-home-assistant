@@ -12,15 +12,24 @@ export declare type ActionConfig =
     | NoActionConfig
     | UrlActionConfig;
 
-export declare type Color =
-    | 'blue'
-    | 'cyan'
-    | 'green'
-    | 'indigo'
-    | 'purple'
-    | 'red'
-    | 'yellow'
-    | 'none';
+type ValuesOf<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<
+    infer ElementType
+>
+    ? ElementType
+    : never;
+
+export const allowedColors = [
+    'blue',
+    'cyan',
+    'green',
+    'indigo',
+    'purple',
+    'red',
+    'yellow',
+    'none',
+];
+
+export type Color = ValuesOf<typeof allowedColors>;
 
 export interface GoogleHomeMenuConfig {
     cards: LovelaceCardConfig[];
