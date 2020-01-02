@@ -48,7 +48,7 @@ export interface GoogleHomeGridItemActionConfig {
 
 export interface GoogleHomeGridItemConfig {
     entity: string;
-    icon: string;
     actions?: GoogleHomeGridItemActionConfig[];
+    icon?: string;
     name?: string;
 }

@@ -24,8 +24,36 @@ export class GoogleHomeGridItem extends LitElement {
     @property() private _config?: GoogleHomeGridItemConfig;
 
     public setConfig = (config: GoogleHomeGridItemConfig) => {
-        // TODO: Evaluate configuration
+        // Check if a configuration is provided at all
         if (!config) throw new Error('Invalid configuration');
+
+        // Check if entity has been set correctly
+        if (typeof config.entity !== 'string')
+            throw new Error(
+                'Invalid configuration: field `entity` is required and should be of type `string`'
+            );
+
+        // Check if actions have been set correctly
+        if (config.actions)
+            config.actions.forEach((action, i) => {
+                // Check if action label has been set
+                if (typeof action.label !== 'string')
+                    throw new Error(
+                        `Invalid configuration: field \`label\` in \`action[${i}]\` is required and should be of type \`string\``
+                    );
+
+                // Check if service has been set
+                if (typeof action.service !== 'string')
+                    throw new Error(
+                        `Invalid configuration: field \`service\` in \`action[${i}]\` is required and should be of type \`string\``
+                    );
+
+                // Check if service has been set as <domain>.<service>
+                if (action.service.split('.').length !== 2)
+                    throw new Error(
+                        `Invalid configuration: field \`service\` in \`action[${i}]\` is required and should be formatted as \`<domain>.<service>\``
+                    );
+            });
 
         if (!this.hass) provideHass(this);
         this._config = config;
