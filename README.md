@@ -2,11 +2,9 @@
 
 **Turn your Home Assistant interface into something that closely resembles the Google Home app using this set of custom Lovelace components.**
 
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/nielsrowinbik/google-home-assistant)
-
 ## Usage
 
-Install `google-home-assistant` as a `module`.
+Install the latest `google-home-assistant` release by getting the compiled `google-home-assistant.js` file from [here](https://github.com/nielsrowinbik/google-home-assistant/releases/latest) and including it as a `module` in `ui-lovelace.yaml`:
 
 ```yaml
 resources:
@@ -14,7 +12,7 @@ resources:
       type: module
 ```
 
-Set up your `lovelace-ui.yaml` with a panel view, and wrap the `google-home-assistant` cards in a `vertical-stack-card`.
+Set up your `ui-lovelace.yaml` with a panel view, and wrap the `google-home-assistant` cards in a `vertical-stack-card`.
 
 ```yaml
 views:
@@ -23,21 +21,32 @@ views:
       path: home
       panel: true
       cards:
-          - type: custom:google-home-menu
-            title: My Home
+          - type: vertical-stack
             cards:
-                - type: custom:google-home-menu-item
-                  color: yellow
-                  entity: group.all_lights
-                  label: Lights
-                  icon: mdi:lightbulb-outline
-          - type: custom:google-home-grid
-            title: Living Room
-            cards:
-                - type: custom:google-home-grid-item
-                  entity: media_player.living_room_tv
-                  icon: /local/icons/chromecast.svg
+                - type: custom:google-home-menu
+                  title: My Home
+                  cards:
+                      - type: custom:google-home-menu-item
+                        color: yellow
+                        entity: group.all_lights
+                        icon: mdi:lightbulb-outline
+                        name: Lights
+                - type: custom:google-home-grid
+                  title: Living Room
+                  cards:
+                      - type: custom:google-home-grid-item
+                        entity: media_player.living_room_tv
+                        icon: /local/icons/chromecast.svg
+                        name: Living Room TV
+                      - type: custom:google-home-grid-item
+                        entity: media_player.living_room_speakers
+                        icon: /local/icons/chromecast_audio.svg
+                        name: Living Room speakers
 ```
+
+All done! See below for each of the available [cards](#cards) and [getting the full experience](#getting-the-full-experience).
+
+![Google Home Asisstant](screenshots/google-home-assistant.jpg)
 
 ## Getting the full experience
 
@@ -49,7 +58,7 @@ The Google Home app is mostly white, so to get the full experience, install a mo
 
 #### 2. Load the Product Sans font
 
-I cannot redistribute the Product Sans font, but it is possible to get your hands on it and load it through custom CSS in `ui-lovelace.yaml`:
+I cannot redistribute the Product Sans font, but it is possible to get your hands on it and load it through your `ui-lovelace.yaml`:
 
 ```yaml
 resources:
@@ -59,7 +68,7 @@ resources:
 
 #### 3. Use the icons from the Google Home app
 
-Again, I cannot redistribute the icons but it is possible to get them from the Google Home app APK:
+Again, I cannot redistribute the icons but it is possible to get them from the Google Home app APK and use them in your Home Assistant:
 
 1. Download the APK from [APKMirror](https://www.apkmirror.com)
 2. Change the file extension from `.apk` to `.zip`
