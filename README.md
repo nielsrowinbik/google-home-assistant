@@ -39,7 +39,33 @@ views:
                   icon: /local/icons/chromecast.svg
 ```
 
-To get the full experience, somehow manage to include the Product Sans font through custom CSS. It's also possible to get the icons the Google Home app uses right from its APK. Upload them as images, and reference them in the `icon` field within `google-home-grid-item`. Finally, include a theme that closely resembles the Google Home app's colours.
+## Getting the full experience
+
+In order to get the full Google Home experience, try doing the following.
+
+#### 1. Install a (very) bright theme
+
+The Google Home app is mostly white, so to get the full experience, install a mostly white theme. Find an example [here](https://github.com/nielsrowinbik/home/blob/master/themes/light.yaml). Please note that this theme is based on my personal use cases and as such may not set all colours correctly.
+
+#### 2. Load the Product Sans font
+
+I cannot redistribute the Product Sans font, but it is possible to get your hands on it and load it through custom CSS in `ui-lovelace.yaml`:
+
+```yaml
+resources:
+    - url: /link/to/product-sans.css
+      type: css
+```
+
+#### 3. Use the icons from the Google Home app
+
+Again, I cannot redistribute the icons but it is possible to get them from the Google Home app APK:
+
+1. Download the APK from [APKMirror](https://www.apkmirror.com)
+2. Change the file extension from `.apk` to `.zip`
+3. Look around and find the [Lottie]() animations
+4. Use [this online tool](https://lottie-to-svg.netlify.com) I created to get the static SVG files (support for Lottie animations files is an idea I'm playing with, see #6)
+5. Upload the SVG's to your Home Assistant's `www` folder and reference them in the card configurations (see example above)
 
 ## Cards
 
@@ -52,44 +78,44 @@ The module enables the following cards (click for their configuration options):
 
 ### `google-home-menu` configuration options
 
-| Name  | Type   | Requirement  | Description                                                      | Default |
-| ----- | ------ | ------------ | ---------------------------------------------------------------- | ------- |
-| type  | string | **Required** | `custom:google-home-menu`                                        |         |
-| cards | list   | **Required** | List of cards to display. Best used with `google-home-menu-item` |         |
-| title | string | Optional     | Title to display above the menu                                  | `""`    |
+| Name  | Type   | Requirement  | Description                     | Default |
+| ----- | ------ | ------------ | ------------------------------- | ------- |
+| type  | string | **Required** | `custom:google-home-menu`       |         |
+| cards | list   | **Required** | List of cards to display        |         |
+| title | string | Optional     | Title to display above the menu | `""`    |
 
 ### `google-home-menu-item` configuration options
 
-| Name   | Type   | Requirement  | Description                                                             | Default |
-| ------ | ------ | ------------ | ----------------------------------------------------------------------- | ------- |
-| type   | string | **Required** | `custom:google-home-menu-item`                                          |         |
-| entity | string | **Required** | Home Assistant Entity ID                                                |         |
-| icon   | string | **Required** | Reference to a Material Design icon (has to start with `mdi:`)          |         |
-| color  | string | Optional     | `blue`, `cyan`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`  |
-| name   | string | Optional     | Override the entity's friendly name                                     |         |
+| Name   | Type   | Requirement  | Description                                                             | Default                  |
+| ------ | ------ | ------------ | ----------------------------------------------------------------------- | ------------------------ |
+| type   | string | **Required** | `custom:google-home-menu-item`                                          |                          |
+| entity | string | **Required** | Home Assistant Entity ID                                                |                          |
+| color  | string | Optional     | `blue`, `cyan`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
+| icon   | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)          | entity's `icon`          |
+| name   | string | Optional     | Override the entity's friendly name                                     | entity's `friendly_name` |
 
 ### `google-home-grid` configuration options
 
-| Name  | Type   | Requirement  | Description                                                      | Default |
-| ----- | ------ | ------------ | ---------------------------------------------------------------- | ------- |
-| type  | string | **Required** | `custom:google-home-grid`                                        |         |
-| cards | list   | **Required** | List of cards to display. Best used with `google-home-grid-item` |         |
-| title | string | **Required** | Title to display above the grid                                  |         |
+| Name  | Type   | Requirement  | Description                     |
+| ----- | ------ | ------------ | ------------------------------- |
+| type  | string | **Required** | `custom:google-home-grid`       |
+| cards | list   | **Required** | List of cards to display`       |
+| title | string | **Required** | Title to display above the grid |
 
 ### `google-home-grid-item` configuration options
 
-| Name    | Type   | Requirement  | Description                                                    | Default |
-| ------- | ------ | ------------ | -------------------------------------------------------------- | ------- |
-| type    | string | **Required** | `custom:google-home-grid-item`                                 |         |
-| entity  | string | **Required** | Home Assistant Entity ID                                       |         |
-| icon    | string | **Required** | Reference to a Material Design icon or an image                |         |
-| name    | string | Optional     | Override the entity's friendly name                            |         |
-| actions | list   | Optional     | List of actions to display below the grid item (options below) |         |
+| Name    | Type   | Requirement  | Description                                                    | Default                  |
+| ------- | ------ | ------------ | -------------------------------------------------------------- | ------------------------ |
+| type    | string | **Required** | `custom:google-home-grid-item`                                 |                          |
+| entity  | string | **Required** | Home Assistant Entity ID                                       |                          |
+| actions | list   | Optional     | List of actions to display below the grid item (options below) | `[]`                     |
+| icon    | string | Optional     | Reference to a Material Design icon or an image                | entity's `icon`          |
+| name    | string | Optional     | Override the entity's friendly name                            | entity's `friendly_name` |
 
 Grid item action options:
 
-| Name    | Type              | Requirement  | Description                                                                | Default |
-| ------- | ----------------- | ------------ | -------------------------------------------------------------------------- | ------- |
-| service | string            | **Required** | Service to call when the action is clicked                                 |         |
-| label   | string            | **Required** | Text to display inside the action's button                                 |         |
-| state   | string or boolean | Optional     | Only display the action when the grid item's entity has the provided state |         |
+| Name    | Type              | Requirement  | Description                                                                |
+| ------- | ----------------- | ------------ | -------------------------------------------------------------------------- |
+| service | string            | **Required** | Service to call when the action is clicked                                 |
+| label   | string            | **Required** | Text to display inside the action's button                                 |
+| state   | string or boolean | Optional     | Only display the action when the grid item's entity has the provided state |
