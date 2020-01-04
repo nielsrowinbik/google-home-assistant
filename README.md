@@ -95,13 +95,24 @@ The module enables the following cards (click for their configuration options):
 
 ### `google-home-menu-item` configuration options
 
-| Name   | Type   | Requirement  | Description                                                             | Default                  |
-| ------ | ------ | ------------ | ----------------------------------------------------------------------- | ------------------------ |
-| type   | string | **Required** | `custom:google-home-menu-item`                                          |                          |
-| entity | string | **Required** | Home Assistant Entity ID                                                |                          |
-| color  | string | Optional     | `blue`, `cyan`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
-| icon   | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)          | entity's `icon`          |
-| name   | string | Optional     | Override the entity's friendly name                                     | entity's `friendly_name` |
+| Name       | Type   | Requirement  | Description                                                                                        | Default                  |
+| ---------- | ------ | ------------ | -------------------------------------------------------------------------------------------------- | ------------------------ |
+| type       | string | **Required** | `custom:google-home-menu-item`                                                                     |                          |
+| entity     | string | **Required** | Home Assistant Entity ID                                                                           |                          |
+| color      | string | Optional     | Colour to use, choose from `blue`, `cyan`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
+| icon       | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)                                     | entity's `icon`          |
+| name       | string | Optional     | Override the entity's `friendly_name`                                                              | entity's `friendly_name` |
+| tap_action | object | Optional     | Action to take on tap                                                                              | `action: more-info`      |
+
+Action options:
+
+| Name            | Type   | Requirement  | Description                                                                                              | Default     |
+| --------------- | ------ | ------------ | -------------------------------------------------------------------------------------------------------- | ----------- |
+| action          | string | **Required** | Action to perform, choose from `more-info`, `toggle`, `call-service`, `navigate`, `url`, or `none`       | `more-info` |
+| navigation_path | string | Optional     | Path to navigate to (e.g. `/lovelace/0/`) when `action` defined as `navigate`                            |             |
+| url             | string | Optional     | URL to open in a new tab when `action` is `url`                                                          |             |
+| service         | string | Optional     | Service to call (e.g. `media_player.media_play_pause`) when `action` defined as `call-service`           |             |
+| service_data    | object | Optional     | Service data to include (e.g. `entity_id: media_player.bedroom`) when `action` defined as `call-service` |             |
 
 ### `google-home-grid` configuration options
 
@@ -119,7 +130,7 @@ The module enables the following cards (click for their configuration options):
 | entity  | string | **Required** | Home Assistant Entity ID                                       |                          |
 | actions | list   | Optional     | List of actions to display below the grid item (options below) | `[]`                     |
 | icon    | string | Optional     | Reference to a Material Design icon or an image                | entity's `icon`          |
-| name    | string | Optional     | Override the entity's friendly name                            | entity's `friendly_name` |
+| name    | string | Optional     | Override the entity's `friendly_name`                          | entity's `friendly_name` |
 
 Grid item action options:
 
