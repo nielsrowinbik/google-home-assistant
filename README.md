@@ -124,13 +124,14 @@ Action options:
 
 ### `google-home-grid-item` configuration options
 
-| Name    | Type   | Requirement  | Description                                                    | Default                  |
-| ------- | ------ | ------------ | -------------------------------------------------------------- | ------------------------ |
-| type    | string | **Required** | `custom:google-home-grid-item`                                 |                          |
-| entity  | string | **Required** | Home Assistant Entity ID                                       |                          |
-| actions | list   | Optional     | List of actions to display below the grid item (options below) | `[]`                     |
-| icon    | string | Optional     | Reference to a Material Design icon or an image                | entity's `icon`          |
-| name    | string | Optional     | Override the entity's `friendly_name`                          | entity's `friendly_name` |
+| Name       | Type   | Requirement  | Description                                                                          | Default                  |
+| ---------- | ------ | ------------ | ------------------------------------------------------------------------------------ | ------------------------ |
+| type       | string | **Required** | `custom:google-home-grid-item`                                                       |                          |
+| entity     | string | **Required** | Home Assistant Entity ID                                                             |                          |
+| actions    | list   | Optional     | List of actions to display below the grid item (options below)                       | `[]`                     |
+| group_size | number | Optional     | Forces (and overrides in case `entity` is in the `group` domain) the group size icon |                          |
+| icon       | string | Optional     | Reference to a Material Design icon or an image                                      | entity's `icon`          |
+| name       | string | Optional     | Override the entity's `friendly_name`                                                | entity's `friendly_name` |
 
 Grid item action options:
 

@@ -71,11 +71,15 @@ export class GoogleHomeGridItem extends LitElement {
                   .slice(0, 2)
             : [];
 
-        const icon = this._config?.icon || entity?.attributes.icon;
-        const name = this._config?.name || entity?.attributes.friendly_name;
-
-        const isMdiIcon = icon!.startsWith('mdi:');
         const isGroup = computeDomain(entityId) === 'group';
+        const groupSize =
+            this._config?.group_size ||
+            (isGroup ? entity?.attributes.entity_id.length : undefined);
+
+        const icon = this._config?.icon || entity?.attributes.icon;
+        const isMdiIcon = icon!.startsWith('mdi:');
+
+        const name = this._config?.name || entity?.attributes.friendly_name;
 
         return html`
             <div id="wrapper">
@@ -106,11 +110,7 @@ export class GoogleHomeGridItem extends LitElement {
                             : button;
                     })}
                 </ul>
-                <span class="badge"
-                    >${isGroup
-                        ? entity?.attributes.entity_id.length
-                        : html``}</span
-                >
+                <span class="badge">${groupSize || html``}</span>
             </div>
         `;
     };
