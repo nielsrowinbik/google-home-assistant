@@ -14,6 +14,7 @@ import {
     TemplateResult,
     PropertyValues,
 } from 'lit-element';
+import lottie from 'lottie-web';
 
 import { GoogleHomeGridItemConfig } from '../types';
 import { provideHass } from '../util';
@@ -22,6 +23,7 @@ import { provideHass } from '../util';
 export class GoogleHomeGridItem extends LitElement {
     @property() public hass?: HomeAssistant;
     @property() private _config?: GoogleHomeGridItemConfig;
+    @property() private _animationStarted?: boolean;
 
     public setConfig = (config: GoogleHomeGridItemConfig) => {
         // Check if a configuration is provided at all
@@ -59,8 +61,26 @@ export class GoogleHomeGridItem extends LitElement {
         this._config = config;
     };
 
-    protected shouldUpdate = (changedProps: PropertyValues) =>
-        hasConfigOrEntityChanged(this, changedProps, false);
+    protected firstUpdated = async () => {
+        if (this._config?.animation !== undefined && !this._animationStarted) {
+            this._animationStarted = true;
+
+            const animationData = await (
+                await fetch(this._config.animation)
+            ).json();
+            const container = this.shadowRoot?.getElementById(
+                'animation'
+            ) as HTMLElement;
+
+            lottie.loadAnimation({
+                autoplay: true,
+                animationData,
+                container,
+                loop: true,
+                renderer: 'svg',
+            });
+        }
+    };
 
     protected render = (): TemplateResult => {
         const entityId = this._config!.entity;
@@ -76,21 +96,12 @@ export class GoogleHomeGridItem extends LitElement {
             this._config?.group_size ||
             (isGroup ? entity?.attributes.entity_id.length : undefined);
 
-        const icon = this._config?.icon || entity?.attributes.icon;
-        const isMdiIcon = icon!.startsWith('mdi:');
-
         const name = this._config?.name || entity?.attributes.friendly_name;
 
         return html`
             <div id="wrapper">
                 <button @click=${this._handleButtonClick} type="button">
-                    ${isMdiIcon
-                        ? html`
-                              <ha-icon icon=${icon}></ha-icon>
-                          `
-                        : html`
-                              <img src=${icon} />
-                          `}
+                    ${this._getAnimationOrIcon()}
                     <h4>
                         ${name}
                     </h4>
@@ -112,6 +123,31 @@ export class GoogleHomeGridItem extends LitElement {
                 </ul>
                 <span class="badge">${groupSize || html``}</span>
             </div>
+        `;
+    };
+
+    protected shouldUpdate = (changedProps: PropertyValues) =>
+        hasConfigOrEntityChanged(this, changedProps, false);
+
+    private _getAnimationOrIcon = (): TemplateResult => {
+        const hasAnimation = this._config?.animation !== undefined;
+
+        if (hasAnimation)
+            return html`
+                <div id="animation"></div>
+            `;
+
+        const entity = this.hass?.states[this._config!.entity];
+        const icon = this._config?.icon || entity?.attributes.icon;
+        const isMdiIcon = icon!.startsWith('mdi:');
+
+        if (isMdiIcon)
+            return html`
+                <ha-icon icon=${icon}></ha-icon>
+            `;
+
+        return html`
+            <img src=${icon} />
         `;
     };
 
@@ -144,7 +180,8 @@ export class GoogleHomeGridItem extends LitElement {
                 position: relative;
             }
 
-            #wrapper > button img {
+            #wrapper > button img,
+            #wrapper > button svg {
                 height: 100%;
                 max-height: 50%;
                 max-width: 70px;

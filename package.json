@@ -12,6 +12,7 @@
         "home-assistant-js-websocket": "^4.4.0",
         "lit-element": "^2.2.1",
         "lit-html": "^1.1.2",
+        "lottie-web": "^5.5.10",
         "pluralize": "^8.0.0"
     },
     "devDependencies": {

@@ -72,9 +72,9 @@ Again, I cannot redistribute the icons but it is possible to get them from the G
 
 1. Download the APK from [APKMirror](https://www.apkmirror.com)
 2. Change the file extension from `.apk` to `.zip`
-3. Look around and find the [Lottie]() animations
-4. Use [this online tool](https://lottie-to-svg.netlify.com) I created to get the static SVG files (support for Lottie animations files is an idea I'm playing with, see #6)
-5. Upload the SVG's to your Home Assistant's `www` folder and reference them in the card configurations (see example above)
+3. Look around and find the [Lottie](https://airbnb.design/lottie/) animations and either
+    1. Use [this online tool](https://lottie-to-svg.netlify.com) I created to get the static SVG files and upload the SVG's to your Home Assistant's `www` folder and reference them in the card configurations (see example above)
+    2. Upload the Lottie animation files to your Home Assistant's `www` folder and reference the animations in the card configurations (see [`google-home-grid-tem` configuration options](#google-home-grid-item-configuration-options))
 
 ## Cards
 
@@ -131,6 +131,7 @@ Action options:
 | type       | string | **Required** | `custom:google-home-grid-item`                                                       |                          |
 | entity     | string | **Required** | Home Assistant Entity ID                                                             |                          |
 | actions    | list   | Optional     | List of actions to display below the grid item (options below)                       | `[]`                     |
+| animation  | string | Optional     | Reference to a [Lottie](https://airbnb.design/lottie/) animation file                |                          |
 | group_size | number | Optional     | Forces (and overrides in case `entity` is in the `group` domain) the group size icon |                          |
 | icon       | string | Optional     | Reference to a Material Design icon or an image                                      | entity's `icon`          |
 | name       | string | Optional     | Override the entity's `friendly_name`                                                | entity's `friendly_name` |
