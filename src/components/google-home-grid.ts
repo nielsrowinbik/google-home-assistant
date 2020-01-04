@@ -1,5 +1,3 @@
-import 'card-tools/src/card-maker';
-
 import { createThing, HomeAssistant, LovelaceCard } from 'custom-card-helpers';
 import {
     css,
@@ -11,6 +9,7 @@ import {
     TemplateResult,
     PropertyValues,
 } from 'lit-element';
+import pluralize from 'pluralize';
 
 import { GoogleHomeGridConfig } from '../types';
 
@@ -35,8 +34,13 @@ export class GoogleHomeGrid extends LitElement {
         <div id="wrapper">
             <h2>${this._config?.title}</h2>
             <h3>
-                ${this._cards?.length}
-                ${this._cards?.length === 1 ? 'device' : 'devices'}
+                ${this._config?.disable_counter === true
+                    ? html``
+                    : pluralize(
+                          this._config?.counter_text || 'device',
+                          this._cards?.length,
+                          true
+                      )}
             </h3>
             <div class="grid">
                 ${this._cards}

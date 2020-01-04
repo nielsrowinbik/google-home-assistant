@@ -116,11 +116,13 @@ Action options:
 
 ### `google-home-grid` configuration options
 
-| Name  | Type   | Requirement  | Description                     |
-| ----- | ------ | ------------ | ------------------------------- |
-| type  | string | **Required** | `custom:google-home-grid`       |
-| cards | list   | **Required** | List of cards to display`       |
-| title | string | **Required** | Title to display above the grid |
+| Name            | Type    | Requirement  | Description                                                         | Default  |
+| --------------- | ------- | ------------ | ------------------------------------------------------------------- | -------- |
+| type            | string  | **Required** | `custom:google-home-grid`                                           |          |
+| cards           | list    | **Required** | List of cards to display                                            |          |
+| title           | string  | **Required** | Title to display above the grid                                     |          |
+| counter_text    | string  | Optional     | Text to display as counter entity, will be pluralised automatically | `device` |
+| disable_counter | boolean | Optional     | Disable device counter                                              | `false`  |
 
 ### `google-home-grid-item` configuration options
 

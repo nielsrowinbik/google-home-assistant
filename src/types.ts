@@ -47,6 +47,8 @@ export interface GoogleHomeMenuItemConfig {
 export interface GoogleHomeGridConfig {
     cards: LovelaceCardConfig[];
     title: string;
+    counter_text?: string;
+    disable_counter?: boolean;
 }
 
 export interface GoogleHomeGridItemActionConfig {
