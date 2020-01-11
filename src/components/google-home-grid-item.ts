@@ -107,9 +107,14 @@ export class GoogleHomeGridItem extends LitElement {
                     </h4>
                 </button>
                 <ul class="actions">
-                    ${actions.map(({ label, service }, i) => {
+                    ${actions.map(({ label, service, service_data }, i) => {
                         const button = html`
-                            <button @click=${this._handleActionClick(service)}>
+                            <button
+                                @click=${this._handleActionClick(
+                                    service,
+                                    service_data
+                                )}
+                            >
                                 ${label}
                             </button>
                         `;
@@ -154,12 +159,19 @@ export class GoogleHomeGridItem extends LitElement {
     private _handleButtonClick = () =>
         handleClick(this, this.hass!, this._config!, false, false);
 
-    private _handleActionClick = (serviceString: string) => {
+    private _handleActionClick = (
+        serviceString: string,
+        serviceData?: { [key: string]: any }
+    ) => {
         const entityId = this._config!.entity;
         const [domain, service] = serviceString.split('.');
 
         return () =>
-            this.hass?.callService(domain, service, { entity_id: entityId });
+            this.hass?.callService(
+                domain,
+                service,
+                serviceData || { entity_id: entityId }
+            );
     };
 
     static get styles(): CSSResult {

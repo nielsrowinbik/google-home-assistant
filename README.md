@@ -95,14 +95,14 @@ The module enables the following cards (click for their configuration options):
 
 ### `google-home-menu-item` configuration options
 
-| Name       | Type   | Requirement  | Description                                                                                        | Default                  |
-| ---------- | ------ | ------------ | -------------------------------------------------------------------------------------------------- | ------------------------ |
-| type       | string | **Required** | `custom:google-home-menu-item`                                                                     |                          |
-| entity     | string | **Required** | Home Assistant Entity ID                                                                           |                          |
+| Name       | Type   | Requirement  | Description                                                                                                      | Default                  |
+| ---------- | ------ | ------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| type       | string | **Required** | `custom:google-home-menu-item`                                                                                   |                          |
+| entity     | string | **Required** | Home Assistant Entity ID                                                                                         |                          |
 | color      | string | Optional     | Colour to use, choose from `blue`, `cyan`, `dark-green`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
-| icon       | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)                                     | entity's `icon`          |
-| name       | string | Optional     | Override the entity's `friendly_name`                                                              | entity's `friendly_name` |
-| tap_action | object | Optional     | Action to take on tap                                                                              | `action: more-info`      |
+| icon       | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)                                                   | entity's `icon`          |
+| name       | string | Optional     | Override the entity's `friendly_name`                                                                            | entity's `friendly_name` |
+| tap_action | object | Optional     | Action to take on tap                                                                                            | `action: more-info`      |
 
 Action options:
 
@@ -138,8 +138,9 @@ Action options:
 
 Grid item action options:
 
-| Name    | Type              | Requirement  | Description                                                                |
-| ------- | ----------------- | ------------ | -------------------------------------------------------------------------- |
-| service | string            | **Required** | Service to call when the action is clicked                                 |
-| label   | string            | **Required** | Text to display inside the action's button                                 |
-| state   | string or boolean | Optional     | Only display the action when the grid item's entity has the provided state |
+| Name         | Type              | Requirement  | Description                                                                | Default              |
+| ------------ | ----------------- | ------------ | -------------------------------------------------------------------------- | -------------------- |
+| service      | string            | **Required** | Service to call when the action is clicked                                 |                      |
+| label        | string            | **Required** | Text to display inside the action's button                                 |                      |
+| service_data | object            | Optional     | Service data to include (e.g. `entity_id: media_player.bedroom`)           | entity's `entity_id` |
+| state        | string or boolean | Optional     | Only display the action when the grid item's entity has the provided state |                      |

@@ -56,6 +56,7 @@ export interface GoogleHomeGridItemActionConfig {
     label: string;
     state?: boolean | string;
     service: string;
+    service_data?: { [key: string]: any };
 }
 
 export interface GoogleHomeGridItemConfig {
