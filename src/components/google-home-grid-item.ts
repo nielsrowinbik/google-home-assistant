@@ -14,7 +14,6 @@ import {
     TemplateResult,
     PropertyValues,
 } from 'lit-element';
-import lottie from 'lottie-web';
 
 import { GoogleHomeGridItemConfig } from '../types';
 import { provideHass } from '../util';
@@ -23,7 +22,7 @@ import { provideHass } from '../util';
 export class GoogleHomeGridItem extends LitElement {
     @property() public hass?: HomeAssistant;
     @property() private _config?: GoogleHomeGridItemConfig;
-    @property() private _animationStarted?: boolean;
+    // @property() private _animationStarted?: boolean;
 
     public setConfig = (config: GoogleHomeGridItemConfig) => {
         // Check if a configuration is provided at all
@@ -62,24 +61,26 @@ export class GoogleHomeGridItem extends LitElement {
     };
 
     protected firstUpdated = async () => {
-        if (this._config?.animation !== undefined && !this._animationStarted) {
-            this._animationStarted = true;
+        // @ts-ignore
+        window.lottie.searchAnimations();
+        //     if (this._config?.animation !== undefined && !this._animationStarted) {
+        //         this._animationStarted = true;
 
-            const animationData = await (
-                await fetch(this._config.animation)
-            ).json();
-            const container = this.shadowRoot?.getElementById(
-                'animation'
-            ) as HTMLElement;
+        //         const animationData = await (
+        //             await fetch(this._config.animation)
+        //         ).json();
+        //         const container = this.shadowRoot?.getElementById(
+        //             'animation'
+        //         ) as HTMLElement;
 
-            lottie.loadAnimation({
-                autoplay: true,
-                animationData,
-                container,
-                loop: true,
-                renderer: 'svg',
-            });
-        }
+        //         lottie.loadAnimation({
+        //             autoplay: true,
+        //             animationData,
+        //             container,
+        //             loop: true,
+        //             renderer: 'svg',
+        //         });
+        //     }
     };
 
     protected render = (): TemplateResult => {
@@ -139,7 +140,10 @@ export class GoogleHomeGridItem extends LitElement {
 
         if (hasAnimation)
             return html`
-                <div id="animation"></div>
+                <lottie-player
+                    loop="true"
+                    src=${this._config?.animation}
+                ></lottie-player>
             `;
 
         const entity = this.hass?.states[this._config!.entity];
