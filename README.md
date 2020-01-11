@@ -99,7 +99,7 @@ The module enables the following cards (click for their configuration options):
 | ---------- | ------ | ------------ | -------------------------------------------------------------------------------------------------- | ------------------------ |
 | type       | string | **Required** | `custom:google-home-menu-item`                                                                     |                          |
 | entity     | string | **Required** | Home Assistant Entity ID                                                                           |                          |
-| color      | string | Optional     | Colour to use, choose from `blue`, `cyan`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
+| color      | string | Optional     | Colour to use, choose from `blue`, `cyan`, `dark-green`, `green`, `indigo`, `purple`, `red`, `yellow`, or `none` | `none`                   |
 | icon       | string | Optional     | Reference to a Material Design icon (has to start with `mdi:`)                                     | entity's `icon`          |
 | name       | string | Optional     | Override the entity's `friendly_name`                                                              | entity's `friendly_name` |
 | tap_action | object | Optional     | Action to take on tap                                                                              | `action: more-info`      |

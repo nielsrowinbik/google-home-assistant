@@ -21,6 +21,7 @@ type ValuesOf<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<
 export const allowedColors = [
     'blue',
     'cyan',
+    'dark-green',
     'green',
     'indigo',
     'purple',

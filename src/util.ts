@@ -16,6 +16,12 @@ export const getDerivedStyles = (color?: Color) => {
                 border: 1px solid #e4f7fb;
                 color: #12b5cb;
             `;
+        case 'dark-green':
+            return css`
+                background-color: #dff1f0;
+                border: 1px solid #dff1f0;
+                color: #00887a;
+            `;
         case 'green':
             return css`
                 background-color: #e6f4ea;
