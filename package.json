@@ -27,7 +27,7 @@
         "rollup-plugin-terser": "^5.1.2",
         "rollup-plugin-typescript2": "^0.25.3",
         "rollup-plugin-uglify": "^6.0.3",
-        "typescript": "^3.7.4"
+        "typescript": "^3.7.5"
     },
     "scripts": {
         "dev": "rollup -c rollup.config.dev.js --watch",
