@@ -32,6 +32,12 @@ export const allowedColors = [
 
 export type Color = ValuesOf<typeof allowedColors>;
 
+export interface GoogleHomeDetailConfig {
+    entity: string;
+    name?: string;
+    subname?: string;
+}
+
 export interface GoogleHomeMenuConfig {
     cards: LovelaceCardConfig[];
     title?: string;
@@ -66,4 +72,5 @@ export interface GoogleHomeGridItemConfig {
     group_size?: number;
     icon?: string;
     name?: string;
+    popup?: boolean;
 }

@@ -2,6 +2,25 @@ import { css } from 'lit-element';
 
 import { Color } from './types';
 
+export const getPopupConfigs = (object: any, result: object = {}) => {
+    if (
+        object.hasOwnProperty('type') &&
+        (object['type'] === 'custom:google-home-grid-item' ||
+            object['type'] === 'custom:google-home-menu-item') &&
+        object.hasOwnProperty('detail')
+    )
+        result[object.entity] = object.popup;
+
+    const keys = Object.keys(object);
+    for (var i = 0; i < keys.length; i++) {
+        if (typeof object[keys[i]] === 'object') {
+            result = getPopupConfigs(object[keys[i]], result);
+        }
+    }
+
+    return result;
+};
+
 export const getDerivedStyles = (color?: Color) => {
     switch (color) {
         case 'blue':
@@ -59,6 +78,18 @@ export const getDerivedStyles = (color?: Color) => {
                 border: 1px solid #acb1b7;
             `;
     }
+};
+
+export const getLovelace = () => {
+    const root = document
+        .querySelector('home-assistant')
+        ?.shadowRoot?.querySelector('home-assistant-main')
+        ?.shadowRoot?.querySelector(
+            'app-drawer-layout partial-panel-resolver ha-panel-lovelace'
+        )
+        ?.shadowRoot?.querySelector('hui-root');
+    // @ts-ignore
+    return root?.lovelace;
 };
 
 export const provideHass = (element: HTMLElement) =>
