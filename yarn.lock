@@ -495,10 +495,10 @@ lodash@^4.17.13:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
   integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
 
-lottie-web@^5.6.0:
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/lottie-web/-/lottie-web-5.6.0.tgz#3b151caac8bfc8ce2076ffecaa5bd4606994d53b"
-  integrity sha512-SR/j+jHr6cL2D0hkVTCX78fANSuKwgFi7di/JB+x6soPmDkIz1zmmAojbxFf+oFN8S1J+o7bVYlNoLL8TzAgNg==
+lottie-web@^5.6.2:
+  version "5.6.2"
+  resolved "https://registry.yarnpkg.com/lottie-web/-/lottie-web-5.6.2.tgz#f34b92f398325e770a591c43726539af21de423d"
+  integrity sha512-XpNdLzj3x0IXhtoLxvp2v+UoiWBjs7sVZJvRKIRk5Tc37MDJoKgz+aOnUwnMbpqZ9u/0O//3eWN4A2UE1JxPXQ==
 
 magic-string@^0.25.2:
   version "0.25.5"
