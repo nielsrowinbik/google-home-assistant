@@ -1,4 +1,4 @@
-import { HomeAssistant } from 'custom-card-helpers';
+import { hasConfigOrEntityChanged, HomeAssistant } from 'custom-card-helpers';
 import {
     css,
     CSSResult,
@@ -11,7 +11,7 @@ import {
 } from 'lit-element';
 
 import { GoogleHomeDetailConfig } from '../types';
-import { provideHass } from '../util';
+import { getDerivedSubtitle, getDerivedValue, provideHass } from '../util';
 
 @customElement('google-home-detail')
 export class GoogleHomeDetail extends LitElement {
@@ -25,12 +25,14 @@ export class GoogleHomeDetail extends LitElement {
         this._config = config;
     };
 
-    protected shouldUpdate = (changedProperties: PropertyValues) =>
-        changedProperties.has('_config');
+    protected shouldUpdate = (changedProps: PropertyValues) =>
+        hasConfigOrEntityChanged(this, changedProps, false);
 
     protected render = (): TemplateResult | void => {
         const entityId = this._config!.entity;
         const entity = this.hass?.states[entityId];
+
+        const slider = this._config?.slider;
 
         return html`
             <div id="wrapper">
@@ -40,22 +42,40 @@ export class GoogleHomeDetail extends LitElement {
                         dialog-dismiss=""
                     ></paper-icon-button>
                 </app-toolbar>
-                <h1>
-                    ${this._config?.name || entity?.attributes.friendly_name}
-                </h1>
-                <h2>
-                    ${this._config?.subname}
-                </h2>
-                <google-home-detail-slider
-                    value="30"
-                ></google-home-detail-slider>
+                <google-home-detail-header
+                    title=${this._config?.name ||
+                        entity?.attributes.friendly_name}
+                    subtitle=${this._config?.subtitle ||
+                        getDerivedSubtitle(entity!)}
+                ></google-home-detail-header>
+                ${slider
+                    ? html`
+                          <google-home-detail-slider
+                              label=${getDerivedValue(entity!, '%')}
+                              max="1"
+                              min="0"
+                              step="0.01"
+                              value=${entity?.attributes[
+                                  slider.value_attribute
+                              ]}
+                          ></google-home-detail-slider>
+                      `
+                    : html``}
             </div>
         `;
     };
 
     static get styles(): CSSResult {
         return css`
+            @media (max-width: 450px) {
+                #wrapper {
+                    height: 100vh;
+                }
+            }
+
             #wrapper {
+                display: flex;
+                flex-direction: column;
                 margin: 0 auto;
                 max-width: 960px;
             }

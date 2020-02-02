@@ -1,4 +1,5 @@
 import './components/google-home-detail';
+import './components/google-home-detail-header';
 import './components/google-home-detail-slider';
 import './components/google-home-grid-item';
 import './components/google-home-grid';

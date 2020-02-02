@@ -20,6 +20,7 @@ export class GoogleHomeDetailSlider extends LitElement {
     @property() protected dragging: boolean;
     @property() protected rtl: boolean;
     @property() private _scale: number;
+    @property() public label?: string;
     @property() public value?: number;
 
     @property() private high?: number;
@@ -287,39 +288,33 @@ export class GoogleHomeDetailSlider extends LitElement {
     `;
     }
 
-    _renderHandle(id) {
+    _renderHandle(id: string) {
         const theta = this._value2angle(this[id]);
         const pos = this._angle2xy(theta);
 
         // Two handles are drawn. One visible, and one invisible that's twice as
         // big. Makes it easier to click.
         return svg`
-      <g class="${id} handle">
-        <path
-          id=${id}
-          class="overflow"
-          d="
-          M ${pos.x} ${pos.y}
-          L ${pos.x + 0.001} ${pos.y + 0.001}
-          "
-          vector-effect="non-scaling-stroke"
-          stroke="rgba(0,0,0,0)"
-          stroke-width="${4 * this.handleSize * this._scale}"
-          />
-        <path
-          id=${id}
-          class="handle"
-          d="
-          M ${pos.x} ${pos.y}
-          L ${pos.x + 0.001} ${pos.y + 0.001}
-          "
-          vector-effect="non-scaling-stroke"
-          stroke-width="${2 * this.handleSize * this._scale}"
-          tabindex="0"
-          @focus=${this.dragStart}
-          @blur=${this.dragEnd}
-          />
-        </g>
+            <g class="${id} handle">
+                <path
+                    id=${id}
+                    class="overflow"
+                    d="M ${pos.x} ${pos.y} L ${pos.x + 0.001} ${pos.y + 0.001}"
+                    vector-effect="non-scaling-stroke"
+                    stroke="transparent"
+                    stroke-width="${4 * this.handleSize * this._scale}"
+                />
+                <path
+                    id=${id}
+                    class="handle"
+                    d="M ${pos.x} ${pos.y} L ${pos.x + 0.001} ${pos.y + 0.001}"
+                    vector-effect="non-scaling-stroke"
+                    stroke-width="${2 * this.handleSize * this._scale}"
+                    tabindex="0"
+                    @focus=${this.dragStart}
+                    @blur=${this.dragEnd}
+                />
+            </g>
       `;
     }
 
@@ -373,39 +368,58 @@ export class GoogleHomeDetailSlider extends LitElement {
                         : ``}
                 </g>
             </svg>
+            ${this.label}
         `;
     }
 
     static get styles() {
         return css`
             :host {
-                display: inline-block;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                flex: 100%;
+                justify-content: center;
                 width: 100%;
             }
+
             svg {
                 overflow: visible;
+                margin: 0 auto;
+                max-width: 80%;
             }
+
             .slider {
                 fill: none;
                 stroke-width: 4;
                 stroke-linecap: round;
             }
+
             .path {
                 stroke: lightgrey;
             }
+
             .bar {
                 stroke: #4285f4;
             }
+
             g.handles {
                 stroke: #4285f4;
                 stroke-linecap: round;
             }
+
             g.low.handle {
                 stroke: var(--round-slider-low-handle-color);
             }
+
             g.high.handle {
                 stroke: var(--round-slider-high-handle-color);
             }
+
+            .handle-inner {
+                stroke: #ffffff;
+            }
+
             .handle:focus {
                 outline: unset;
             }

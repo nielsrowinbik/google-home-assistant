@@ -32,10 +32,16 @@ export const allowedColors = [
 
 export type Color = ValuesOf<typeof allowedColors>;
 
+export interface GoogleHomeDetailSliderConfig {
+    label?: string;
+    value_attribute: string;
+}
+
 export interface GoogleHomeDetailConfig {
     entity: string;
     name?: string;
-    subname?: string;
+    subtitle?: string;
+    slider?: GoogleHomeDetailSliderConfig;
 }
 
 export interface GoogleHomeMenuConfig {

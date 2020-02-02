@@ -1,3 +1,4 @@
+import { HassEntity } from 'home-assistant-js-websocket';
 import { css } from 'lit-element';
 
 import { Color } from './types';
@@ -9,7 +10,7 @@ export const getPopupConfigs = (object: any, result: object = {}) => {
             object['type'] === 'custom:google-home-menu-item') &&
         object.hasOwnProperty('detail')
     )
-        result[object.entity] = object.popup;
+        result[object.entity] = object.detail;
 
     const keys = Object.keys(object);
     for (var i = 0; i < keys.length; i++) {
@@ -77,6 +78,35 @@ export const getDerivedStyles = (color?: Color) => {
                 color: #5f6268;
                 border: 1px solid #acb1b7;
             `;
+    }
+};
+
+export const getDerivedSubtitle = (entity: HassEntity): string => {
+    const { attributes, entity_id, state } = entity;
+    const { media_artist, media_title } = attributes;
+    const domain = entity_id.split('.')[0];
+
+    switch (domain) {
+        case 'media_player':
+            if (['paused', 'playing'].includes(state))
+                return `${media_title} · ${media_artist}`;
+            return 'Not playing';
+        default:
+            return '';
+    }
+};
+
+export const getDerivedValue = (entity: HassEntity, suffix?: string) => {
+    const { attributes, entity_id } = entity;
+    const { volume_level } = attributes;
+    const domain = entity_id.split('.')[0];
+
+    switch (domain) {
+        case 'media_player':
+            const value = volume_level ? Math.round(volume_level * 100) : 0;
+            return suffix ? `${value}${suffix}` : value;
+        default:
+            return suffix ? `0${suffix}` : 0;
     }
 };
 
