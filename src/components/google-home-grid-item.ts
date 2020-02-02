@@ -60,29 +60,6 @@ export class GoogleHomeGridItem extends LitElement {
         this._config = config;
     };
 
-    protected firstUpdated = async () => {
-        // @ts-ignore
-        window.lottie.searchAnimations();
-        //     if (this._config?.animation !== undefined && !this._animationStarted) {
-        //         this._animationStarted = true;
-
-        //         const animationData = await (
-        //             await fetch(this._config.animation)
-        //         ).json();
-        //         const container = this.shadowRoot?.getElementById(
-        //             'animation'
-        //         ) as HTMLElement;
-
-        //         lottie.loadAnimation({
-        //             autoplay: true,
-        //             animationData,
-        //             container,
-        //             loop: true,
-        //             renderer: 'svg',
-        //         });
-        //     }
-    };
-
     protected render = (): TemplateResult => {
         const entityId = this._config!.entity;
         const entity = this.hass?.states[entityId];
@@ -207,7 +184,7 @@ export class GoogleHomeGridItem extends LitElement {
             #wrapper > button h4 {
                 color: #131313;
                 font-family: 'Product Sans';
-                font-size: 1.1rem;
+                font-size: 1.15rem;
                 font-weight: 400;
                 margin: 12px 0px 0px;
             }
@@ -229,8 +206,8 @@ export class GoogleHomeGridItem extends LitElement {
             .actions button {
                 color: #4285f4;
                 flex: 0;
-                font-size: 0.95rem;
-                font-weight: 500;
+                font-weight: 400;
+                white-space: nowrap;
             }
 
             .actions span {
