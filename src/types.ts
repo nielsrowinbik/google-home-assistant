@@ -78,5 +78,4 @@ export interface GoogleHomeGridItemConfig {
     group_size?: number;
     icon?: string;
     name?: string;
-    popup?: boolean;
 }
