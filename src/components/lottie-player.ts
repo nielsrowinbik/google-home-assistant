@@ -28,13 +28,16 @@ export class LottiePlayer extends LitElement {
 
     protected updated = () => this._load();
 
-    private _load = () =>
-        lottie.loadAnimation({
+    private _load = () => {
+        // TODO: Ugly hack, change this
+        this.container!.innerHTML = '';
+        return lottie.loadAnimation({
             container: this.container!,
             loop: true,
             autoplay: true,
             path: this.src || '',
         });
+    };
 
     static get styles(): CSSResult {
         return css`
@@ -48,8 +51,11 @@ export class LottiePlayer extends LitElement {
             }
 
             div {
+                display: block;
                 height: 100%;
                 width: 100%;
+                max-height: 50%;
+                max-width: 70px;
             }
         `;
     }
