@@ -1,4 +1,4 @@
-import { HassEntity } from 'home-assistant-js-websocket';
+import { Connection, HassEntity } from 'home-assistant-js-websocket';
 import { css } from 'lit-element';
 
 import { Color } from './types';
@@ -121,6 +121,22 @@ export const getLovelace = () => {
     // @ts-ignore
     return root?.lovelace;
 };
+
+export const subscribeTemplate = (
+    connection: Connection,
+    component: any,
+    field: string,
+    template: string
+) =>
+    connection.subscribeMessage(
+        ({ result }: any) => {
+            component[field] = result;
+        },
+        {
+            type: 'render_template',
+            template,
+        }
+    );
 
 export const provideHass = (element: HTMLElement) =>
     // @ts-ignore
