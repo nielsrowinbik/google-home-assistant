@@ -1,5 +1,5 @@
 import { Connection, HassEntity } from 'home-assistant-js-websocket';
-import { css } from 'lit-element';
+import { css, html, TemplateResult } from 'lit-element';
 
 import { Color } from './types';
 
@@ -79,6 +79,14 @@ export const getDerivedStyles = (color?: Color) => {
                 border: 1px solid #acb1b7;
             `;
     }
+};
+
+export const getDerivedSlider = (entity: HassEntity): TemplateResult => {
+    const { attributes, entity_id } = entity;
+    const { volume_level } = attributes;
+    const domain = entity_id.split('.')[0];
+
+    return html``;
 };
 
 export const getDerivedSubtitle = (entity: HassEntity): string => {

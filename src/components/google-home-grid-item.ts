@@ -1,9 +1,4 @@
-import {
-    handleClick,
-    hasConfigOrEntityChanged,
-    HomeAssistant,
-    computeDomain,
-} from 'custom-card-helpers';
+import { handleClick, HomeAssistant, computeDomain } from 'custom-card-helpers';
 import {
     css,
     CSSResult,
@@ -15,117 +10,165 @@ import {
     PropertyValues,
 } from 'lit-element';
 
-import { GoogleHomeGridItemConfig } from '../types';
-import { provideHass } from '../util';
+import {
+    GoogleHomeGridItemConfig,
+    GoogleHomeGridItemActionConfig,
+} from '../types';
+import { provideHass, subscribeTemplate } from '../util';
+
+const KEYS_TO_TEMPLATE = ['animation', 'icon', 'name'];
 
 @customElement('google-home-grid-item')
 export class GoogleHomeGridItem extends LitElement {
-    @property() public hass?: HomeAssistant;
-    @property() private _config?: GoogleHomeGridItemConfig;
-    // @property() private _animationStarted?: boolean;
+    // Properties provided by configuration
+    @property() public actions?: GoogleHomeGridItemActionConfig[];
+    @property() public animation?: string;
+    @property() public entity?: string;
+    @property() public group_size?: number;
+    @property() public icon?: string;
+    @property() public name?: string;
+
+    // Internal properties
+    @property() private hass?: HomeAssistant;
+    @property() private isGroup?: boolean;
 
     public setConfig = (config: GoogleHomeGridItemConfig) => {
         // Check if a configuration is provided at all
         if (!config) throw new Error('Invalid configuration');
 
-        // Check if entity has been set correctly
-        if (typeof config.entity !== 'string')
-            throw new Error(
-                'Invalid configuration: field `entity` is required and should be of type `string`'
-            );
-
-        // Check if actions have been set correctly
-        if (config.actions)
-            config.actions.forEach((action, i) => {
-                // Check if action label has been set
-                if (typeof action.label !== 'string')
-                    throw new Error(
-                        `Invalid configuration: field \`label\` in \`action[${i}]\` is required and should be of type \`string\``
-                    );
-
-                // Check if service has been set
-                if (typeof action.service !== 'string')
-                    throw new Error(
-                        `Invalid configuration: field \`service\` in \`action[${i}]\` is required and should be of type \`string\``
-                    );
-
-                // Check if service has been set as <domain>.<service>
-                if (action.service.split('.').length !== 2)
-                    throw new Error(
-                        `Invalid configuration: field \`service\` in \`action[${i}]\` is required and should be formatted as \`<domain>.<service>\``
-                    );
-            });
-
+        // Provide hass object if unset
         if (!this.hass) provideHass(this);
-        this._config = config;
+
+        // Set properties from config
+        Object.keys(config).forEach(key => {
+            const value = config[key];
+
+            if (KEYS_TO_TEMPLATE.includes(key)) {
+                if (!this.hass) throw new Error('Hass is undefined!');
+
+                subscribeTemplate(this.hass?.connection, this, key, value);
+                return;
+            }
+
+            this[key] = config[key];
+        });
+
+        // Set internal properties
+        this.isGroup = computeDomain(config.entity) === 'group';
     };
 
     protected render = (): TemplateResult => {
-        const entityId = this._config!.entity;
-        const entity = this.hass?.states[entityId];
-        const actions = this._config?.actions
-            ? this._config?.actions
-                  ?.filter(({ state }) => !state || entity?.state === state)
-                  .slice(0, 2)
-            : [];
-
-        const isGroup = computeDomain(entityId) === 'group';
-        const groupSize =
-            this._config?.group_size ||
-            (isGroup ? entity?.attributes.entity_id.length : undefined);
-
-        const name = this._config?.name || entity?.attributes.friendly_name;
-
         return html`
             <div id="wrapper">
                 <button @click=${this._handleButtonClick} type="button">
-                    ${this._getAnimationOrIcon()}
-                    <h4>
-                        ${name}
-                    </h4>
+                    ${this._renderAnimationOrIcon()}
+                    ${this._renderFriendlyName()}
                 </button>
                 <ul class="actions">
-                    ${actions.map(({ label, service, service_data }, i) => {
-                        const button = html`
-                            <button
-                                @click=${this._handleActionClick(
-                                    service,
-                                    service_data
-                                )}
-                            >
-                                ${label}
-                            </button>
-                        `;
-                        return i % 2 !== 0
-                            ? html`
-                                  <span></span>
-                                  ${button}
-                              `
-                            : button;
-                    })}
+                    ${this._renderActionButtons()}
                 </ul>
-                <span class="badge">${groupSize || html``}</span>
+                ${this._renderBadge()}
             </div>
         `;
     };
 
-    protected shouldUpdate = (changedProps: PropertyValues) =>
-        hasConfigOrEntityChanged(this, changedProps, false);
+    protected shouldUpdate = (changedProperties: PropertyValues) => {
+        // Rerender if our config properties have changed (likely through template updates)
+        if (
+            changedProperties.has('actions') ||
+            changedProperties.has('animation') ||
+            changedProperties.has('entity') ||
+            changedProperties.has('group_size') ||
+            changedProperties.has('icon') ||
+            changedProperties.has('name')
+        )
+            return true;
 
-    private _getAnimationOrIcon = (): TemplateResult => {
-        const hasAnimation = this._config?.animation !== undefined;
+        // Rerender if the entity that was set by the user changes
+        if (changedProperties.has('hass')) {
+            const curEntity = this.hass?.states[this.entity!];
+            const newHass = changedProperties.get('hass') as HomeAssistant;
+            const newEntity = newHass?.states[this.entity!];
 
-        if (hasAnimation)
+            if (curEntity !== newEntity) return true;
+        }
+
+        // Do not rerender if anything else changes
+        return false;
+    };
+
+    private _handleActionButtonClick = (
+        serviceString: string,
+        serviceData?: { [key: string]: any }
+    ) => {
+        const [domain, service] = serviceString.split('.');
+
+        return () =>
+            this.hass?.callService(
+                domain,
+                service,
+                serviceData || { entity_id: this.entity }
+            );
+    };
+
+    private _handleButtonClick = () =>
+        handleClick(
+            this,
+            this.hass!,
+            {
+                entity: this.entity,
+                tap_action: { action: 'more-info' },
+            },
+            false,
+            false
+        );
+
+    private _renderActionButtons = (): TemplateResult[] => {
+        const entity = this.hass?.states[this.entity!];
+        const actions =
+            this.actions
+                ?.filter(({ state }) => {
+                    if (state === undefined) return true;
+                    return entity?.state === state;
+                })
+                .slice(0, 2) || [];
+
+        return actions.map(({ label, service, service_data }, i) => {
+            const button = html`
+                <button
+                    @click=${this._handleActionButtonClick(
+                        service,
+                        service_data
+                    )}
+                    type="button"
+                >
+                    ${label}
+                </button>
+            `;
+
+            if (i % 2 !== 0)
+                return html`
+                    <span></span>
+                    ${button}
+                `;
+
+            return button;
+        });
+    };
+
+    private _renderAnimationOrIcon = (): TemplateResult => {
+        if (this.animation)
             return html`
                 <lottie-player
+                    autoplay="true"
                     loop="true"
-                    src=${this._config?.animation}
+                    src=${this.animation}
                 ></lottie-player>
             `;
 
-        const entity = this.hass?.states[this._config!.entity];
-        const icon = this._config?.icon || entity?.attributes.icon;
-        const isMdiIcon = icon!.startsWith('mdi:');
+        const entity = this.hass?.states[this.entity!];
+        const icon = this.icon || entity?.attributes.icon;
+        const isMdiIcon = icon?.startsWith('mdi:');
 
         if (isMdiIcon)
             return html`
@@ -137,22 +180,25 @@ export class GoogleHomeGridItem extends LitElement {
         `;
     };
 
-    private _handleButtonClick = () =>
-        handleClick(this, this.hass!, this._config!, false, false);
+    private _renderBadge = (): TemplateResult => {
+        if (this.group_size || this.isGroup) {
+            const entity = this.hass?.states[this.entity!];
+            const size = this.group_size || entity?.attributes.entity_id.length;
 
-    private _handleActionClick = (
-        serviceString: string,
-        serviceData?: { [key: string]: any }
-    ) => {
-        const entityId = this._config!.entity;
-        const [domain, service] = serviceString.split('.');
+            return html`
+                <span class="badge">${size}</span>
+            `;
+        }
+        return html``;
+    };
 
-        return () =>
-            this.hass?.callService(
-                domain,
-                service,
-                serviceData || { entity_id: entityId }
-            );
+    private _renderFriendlyName = (): TemplateResult => {
+        const entity = this.hass?.states[this.entity!];
+        return html`
+            <h4>
+                ${this.name || entity?.attributes.friendly_name}
+            </h4>
+        `;
     };
 
     static get styles(): CSSResult {
@@ -206,7 +252,7 @@ export class GoogleHomeGridItem extends LitElement {
             .actions button {
                 color: #4285f4;
                 flex: 0;
-                font-weight: 400;
+                font-weight: 500;
                 white-space: nowrap;
             }
 

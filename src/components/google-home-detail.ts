@@ -1,3 +1,4 @@
+import { HassEntity } from 'home-assistant-js-websocket';
 import { hasConfigOrEntityChanged, HomeAssistant } from 'custom-card-helpers';
 import {
     css,
@@ -11,7 +12,7 @@ import {
 } from 'lit-element';
 
 import { GoogleHomeDetailConfig } from '../types';
-import { getDerivedSubtitle, getDerivedValue, provideHass } from '../util';
+import { provideHass } from '../util';
 
 @customElement('google-home-detail')
 export class GoogleHomeDetail extends LitElement {
@@ -32,7 +33,7 @@ export class GoogleHomeDetail extends LitElement {
         const entityId = this._config!.entity;
         const entity = this.hass?.states[entityId];
 
-        const slider = this._config?.slider;
+        if (!entity) throw new Error('Provided entity does not exist!');
 
         return html`
             <div id="wrapper">
@@ -42,25 +43,7 @@ export class GoogleHomeDetail extends LitElement {
                         dialog-dismiss=""
                     ></paper-icon-button>
                 </app-toolbar>
-                <google-home-detail-header
-                    title=${this._config?.name ||
-                        entity?.attributes.friendly_name}
-                    subtitle=${this._config?.subtitle ||
-                        getDerivedSubtitle(entity!)}
-                ></google-home-detail-header>
-                ${slider
-                    ? html`
-                          <google-home-detail-slider
-                              label=${getDerivedValue(entity!, '%')}
-                              max="1"
-                              min="0"
-                              step="0.01"
-                              value=${entity?.attributes[
-                                  slider.value_attribute
-                              ]}
-                          ></google-home-detail-slider>
-                      `
-                    : html``}
+                ${renderHeader(entity)} ${renderSlider(entity)}
             </div>
         `;
     };
@@ -105,3 +88,73 @@ export class GoogleHomeDetail extends LitElement {
         `;
     }
 }
+
+const getSubtitle = (entity: HassEntity): string => {
+    const { attributes, entity_id, state } = entity;
+    const { media_artist, media_title } = attributes;
+    const domain = entity_id.split('.')[0];
+
+    switch (domain) {
+        case 'media_player':
+            if (['paused', 'playing'].includes(state))
+                return `${media_title} · ${media_artist}`;
+            return 'Not playing';
+        default:
+            return '';
+    }
+};
+
+const getValue = (entity: HassEntity) => {
+    const { attributes, entity_id } = entity;
+    const { brightness_pct, temperature, volume_level } = attributes;
+    const domain = entity_id.split('.')[0];
+
+    switch (domain) {
+        case 'climate':
+            return temperature || 0;
+        case 'light':
+            return brightness_pct || 0;
+        case 'media_player':
+            return volume_level ? Math.round(volume_level * 100) : 0;
+        default:
+            return 0;
+    }
+};
+
+const renderHeader = (entity: HassEntity): TemplateResult => {
+    const { attributes } = entity;
+    const { friendly_name } = attributes;
+
+    return html`
+        <google-home-detail-header
+            title=${friendly_name}
+            subtitle=${getSubtitle(entity)}
+        >
+        </google-home-detail-header>
+    `;
+};
+
+const renderSlider = (entity: HassEntity): TemplateResult => {
+    const { entity_id } = entity;
+    const domain = entity_id.split('.')[0];
+
+    const value = getValue(entity);
+
+    // TODO: Check if entity supports values set through a slider,
+    // and don't render a slider if it doesn't
+
+    switch (domain) {
+        case 'climate':
+            return html`
+                <google-home-detail-slider value=${value}>
+                </google-home-detail-slider>
+            `;
+        case 'media_player':
+            return html`
+                <google-home-detail-slider label="${value}%" value=${value}>
+                </google-home-detail-slider>
+            `;
+        default:
+            return html``;
+    }
+};

@@ -33,6 +33,12 @@ export class GoogleHomeDetailHeader extends LitElement {
 
     static get styles(): CSSResult {
         return css`
+            @media (max-width: 450px) {
+                h1 {
+                    font-size: 32px;
+                }
+            }
+
             #wrapper {
                 margin: 0 auto;
                 max-width: 80%;
@@ -45,20 +51,17 @@ export class GoogleHomeDetailHeader extends LitElement {
                 text-align: center;
             }
 
-            h1:empty,
-            h2:empty {
-                display: none;
-            }
-
             h1 {
                 color: #131313;
-                font-size: 32px;
+                font-size: 28px;
                 margin: 20px 0;
             }
 
             h2 {
                 color: #616870;
-                font-size: 20px;
+                font-size: 1.4rem;
+                font-weight: 300;
+                margin: 36px 0 0;
             }
         `;
     }

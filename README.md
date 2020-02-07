@@ -126,15 +126,15 @@ Action options:
 
 ### `google-home-grid-item` configuration options
 
-| Name       | Type   | Requirement  | Description                                                                          | Default                  |
-| ---------- | ------ | ------------ | ------------------------------------------------------------------------------------ | ------------------------ |
-| type       | string | **Required** | `custom:google-home-grid-item`                                                       |                          |
-| entity     | string | **Required** | Home Assistant Entity ID                                                             |                          |
-| actions    | list   | Optional     | List of actions to display below the grid item (options below)                       | `[]`                     |
-| animation  | string | Optional     | Reference to a [Lottie](https://airbnb.design/lottie/) animation file                |                          |
-| group_size | number | Optional     | Forces (and overrides in case `entity` is in the `group` domain) the group size icon |                          |
-| icon       | string | Optional     | Reference to a Material Design icon or an image                                      | entity's `icon`          |
-| name       | string | Optional     | Override the entity's `friendly_name`                                                | entity's `friendly_name` |
+| Name       | Type   | Requirement  | Templated | Description                                                                          | Default                  |
+| ---------- | ------ | ------------ | --------- | ------------------------------------------------------------------------------------ | ------------------------ |
+| type       | string | **Required** | No        | `custom:google-home-grid-item`                                                       |                          |
+| entity     | string | **Required** | No        | Home Assistant Entity ID                                                             |                          |
+| actions    | list   | Optional     | No        | List of actions to display below the grid item (options below)                       | `[]`                     |
+| animation  | string | Optional     | Yes       | Reference to a [Lottie](https://airbnb.design/lottie/) animation file                |                          |
+| group_size | number | Optional     | No        | Forces (and overrides in case `entity` is in the `group` domain) the group size icon |                          |
+| icon       | string | Optional     | Yes       | Reference to a Material Design icon or an image                                      | entity's `icon`          |
+| name       | string | Optional     | Yes       | Override the entity's `friendly_name`                                                | entity's `friendly_name` |
 
 Grid item action options:
 

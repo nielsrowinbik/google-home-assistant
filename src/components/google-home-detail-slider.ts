@@ -314,6 +314,16 @@ export class GoogleHomeDetailSlider extends LitElement {
                     @focus=${this.dragStart}
                     @blur=${this.dragEnd}
                 />
+                <path
+                    id=${id}
+                    class="handle"
+                    d="M ${pos.x} ${pos.y} L ${pos.x + 0.001} ${pos.y + 0.001}"
+                    vector-effect="non-scaling-stroke"
+                    stroke="#fff"
+                    stroke-width="${1.8 * this.handleSize * this._scale}"
+                    tabindex="0"
+                    pointer-events="none"
+                />
             </g>
       `;
     }
@@ -368,7 +378,7 @@ export class GoogleHomeDetailSlider extends LitElement {
                         : ``}
                 </g>
             </svg>
-            ${this.label}
+            <h4>${this.label}</h4>
         `;
     }
 
@@ -380,13 +390,14 @@ export class GoogleHomeDetailSlider extends LitElement {
                 flex-direction: column;
                 flex: 100%;
                 justify-content: center;
+                margin: 64px 0;
                 width: 100%;
             }
 
             svg {
                 overflow: visible;
                 margin: 0 auto;
-                max-width: 80%;
+                max-width: 70%;
             }
 
             .slider {
@@ -422,6 +433,14 @@ export class GoogleHomeDetailSlider extends LitElement {
 
             .handle:focus {
                 outline: unset;
+            }
+
+            h4 {
+                color: #4285f4;
+                font-family: 'Product Sans';
+                font-size: 2.5rem;
+                font-weight: 500;
+                margin: 0;
             }
         `;
     }
