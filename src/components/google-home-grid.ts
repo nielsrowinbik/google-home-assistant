@@ -12,41 +12,87 @@ import {
 import pluralize from 'pluralize';
 
 import { GoogleHomeGridConfig } from '../types';
+import { provideHass, subscribeTemplate } from '../util';
+
+const KEYS_TO_TEMPLATE: string[] = [];
 
 @customElement('google-home-grid')
 export class GoogleHomeGrid extends LitElement {
-    @property() public hass?: HomeAssistant;
-    @property() private _config?: GoogleHomeGridConfig;
-    @property() private _cards?: LovelaceCard[];
+    // Properties provided by configuration
+    @property() public cards?: LovelaceCard[];
+    @property() public counter_text?: string;
+    @property() public disable_counter?: boolean;
+
+    // Internal properties
+    @property() private hass?: HomeAssistant;
 
     public setConfig = (config: GoogleHomeGridConfig) => {
-        if (!config || !config.cards || !Array.isArray(config.cards))
-            throw new Error('Invalid configuration');
+        // Check if a configuration is provided at all
+        if (!config) throw new Error('Invalid configuration');
 
-        this._config = config;
-        this._cards = config.cards.map(cardConfig => createThing(cardConfig));
+        // Provide hass object if unset
+        if (!this.hass) provideHass(this);
+
+        // Set properties from config
+        Object.keys(config).forEach(key => {
+            const value = config[key];
+
+            if (KEYS_TO_TEMPLATE.includes(key)) {
+                if (!this.hass) throw new Error('Hass is undefined!');
+
+                subscribeTemplate(this.hass?.connection, this, key, value);
+                return;
+            }
+
+            this[key] = config[key];
+        });
     };
 
-    protected shouldUpdate = (changedProperties: PropertyValues) =>
-        changedProperties.has('_config');
+    protected shouldUpdate = (changedProperties: PropertyValues) => {
+        // Rerender if our config properties have changed (likely through template updates)
+        if (
+            changedProperties.has('cards') ||
+            changedProperties.has('counter_text') ||
+            changedProperties.has('disable_counter') ||
+            changedProperties.has('title')
+        )
+            return true;
+
+        // Do not rerender if anything else changes
+        return false;
+    };
 
     protected render = (): TemplateResult | void => html`
         <div id="wrapper">
-            <h2>${this._config?.title}</h2>
-            <h3>
-                ${this._config?.disable_counter === true
-                    ? html``
-                    : pluralize(
-                          this._config?.counter_text || 'device',
-                          this._cards?.length,
-                          true
-                      )}
-            </h3>
+            <h2>${this.title}</h2>
+            ${this._renderDeviceCounter()}
             <div class="grid">
-                ${this._cards}
+                ${this._renderCards()}
             </div>
         </div>
     `;
+
+    private _renderCards = (): TemplateResult => {
+        const cards = this.cards?.map(card => createThing(card));
+
+        return html`
+            ${cards}
+        `;
+    };
+
+    private _renderDeviceCounter = (): TemplateResult => {
+        if (this.disable_counter === true) return html``;
+
+        const count = pluralize(
+            this.counter_text || 'device',
+            this.cards?.length,
+            true
+        );
+
+        return html`
+            <h3>${count}</h3>
+        `;
+    };
 
     static get styles(): CSSResult {
         return css`

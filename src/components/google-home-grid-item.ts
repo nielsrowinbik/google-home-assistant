@@ -16,7 +16,7 @@ import {
 } from '../types';
 import { provideHass, subscribeTemplate } from '../util';
 
-const KEYS_TO_TEMPLATE = ['animation', 'icon', 'name'];
+const KEYS_TO_TEMPLATE: string[] = ['animation', 'icon', 'name'];
 
 @customElement('google-home-grid-item')
 export class GoogleHomeGridItem extends LitElement {
