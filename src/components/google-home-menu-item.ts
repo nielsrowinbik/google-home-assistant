@@ -14,67 +14,112 @@ import {
     PropertyValues,
 } from 'lit-element';
 
-import { allowedColors, GoogleHomeMenuItemConfig } from '../types';
-import { getDerivedStyles, provideHass } from '../util';
+import { ActionConfig, GoogleHomeMenuItemConfig } from '../types';
+import { getDerivedStyles, provideHass, subscribeTemplate } from '../util';
+
+const KEYS_TO_TEMPLATE: string[] = ['color', 'icon', 'name'];
 
 @customElement('google-home-menu-item')
 export class GoogleHomeMenuItem extends LitElement {
-    @property() public hass?: HomeAssistant;
-    @property() private _config?: GoogleHomeMenuItemConfig;
+    // Properties provided by configuration
+    @property() public color?: string;
+    @property() public entity?: string;
+    @property() public icon?: string;
+    @property() public name?: string;
+    @property() public tap_action?: ActionConfig;
+
+    // Internal properties
+    @property() private hass?: HomeAssistant;
 
     public setConfig = (config: GoogleHomeMenuItemConfig) => {
         // Check if a configuration is provided at all
         if (!config) throw new Error('Invalid configuration');
 
-        // Check if entity has been set correctly
-        if (typeof config.entity !== 'string')
-            throw new Error(
-                'Invalid configuration: field `entity` is required and should be of type `string`'
-            );
-
-        // Check if specified color is allowed
-        if (config.color && !allowedColors.includes(config.color))
-            throw new Error(
-                `Invalid configuration: field \`color\ should be one of: ${allowedColors
-                    .map(color => `\`${color}\``)
-                    .join(', ')}`
-            );
-
-        // Check if specified icon is correct
-        if (config.icon && !config.icon.startsWith('mdi:'))
-            throw new Error(
-                `Invalid configuration: field \`icon\ should start with \`mdi:\``
-            );
-
+        // Provide hass object if unset
         if (!this.hass) provideHass(this);
-        this._config = config;
+
+        // Set properties from config
+        Object.keys(config).forEach(key => {
+            const value = config[key];
+
+            if (KEYS_TO_TEMPLATE.includes(key)) {
+                if (!this.hass) throw new Error('Hass is undefined!');
+
+                subscribeTemplate(this.hass?.connection, this, key, value);
+                return;
+            }
+
+            this[key] = config[key];
+        });
     };
 
-    protected shouldUpdate = (changedProps: PropertyValues) =>
-        hasConfigOrEntityChanged(this, changedProps, false);
-
     protected render = (): TemplateResult | void => {
-        const derivedStyles = getDerivedStyles(this._config?.color);
-        const entityId = this._config!.entity;
-        const entity = this.hass?.states[entityId];
-
-        const icon = this._config?.icon || entity?.attributes.icon;
-        const name = this._config?.name || entity?.attributes.friendly_name;
-
         return html`
             <button
-                @click=${this._handleClick}
-                data-color=${this._config?.color}
+                @click=${this._handleButtonClick}
+                data-color=${this.color}
                 type="button"
             >
-                <ha-icon icon=${icon} style=${derivedStyles}></ha-icon>
-                <span>${name}</span>
+                ${this._renderIconWithDerivedStyles()}
+                ${this._renderFriendlyName()}
             </button>
         `;
     };
 
-    private _handleClick = () =>
-        handleClick(this, this.hass!, this._config!, false, false);
+    protected shouldUpdate = (changedProperties: PropertyValues) => {
+        // Rerender if our config properties have changed (likely through template updates)
+        if (
+            changedProperties.has('color') ||
+            changedProperties.has('entity') ||
+            changedProperties.has('icon') ||
+            changedProperties.has('name') ||
+            changedProperties.has('tap_action')
+        )
+            return true;
+
+        // Rerender if the entity that was set by the user changes
+        if (changedProperties.has('hass')) {
+            const curEntity = this.hass?.states[this.entity!];
+            const newHass = changedProperties.get('hass') as HomeAssistant;
+            const newEntity = newHass?.states[this.entity!];
+
+            if (curEntity !== newEntity) return true;
+        }
+
+        // Do not rerender if anything else changes
+        return false;
+    };
+
+    private _handleButtonClick = () =>
+        handleClick(
+            this,
+            this.hass!,
+            {
+                entity: this.entity,
+                tap_action: this.tap_action || { action: 'more-info' },
+            },
+            false,
+            false
+        );
+
+    private _renderIconWithDerivedStyles = (): TemplateResult => {
+        const derivedStyles = getDerivedStyles(this.color);
+        const entity = this.hass?.states[this.entity!];
+        const icon = this.icon || entity?.attributes.icon;
+
+        return html`
+            <ha-icon icon=${icon} style=${derivedStyles}></ha-icon>
+        `;
+    };
+
+    private _renderFriendlyName = (): TemplateResult => {
+        const entity = this.hass?.states[this.entity!];
+        return html`
+            <span>
+                ${this.name || entity?.attributes.friendly_name}
+            </span>
+        `;
+    };
 
     static get styles(): CSSResult {
         return css`

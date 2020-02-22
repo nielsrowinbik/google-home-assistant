@@ -48,6 +48,16 @@ export class GoogleHomeGrid extends LitElement {
         });
     };
 
+    protected render = (): TemplateResult | void => html`
+        <div id="wrapper">
+            <h2>${this.title}</h2>
+            ${this._renderDeviceCounter()}
+            <div class="grid">
+                ${this._renderCards()}
+            </div>
+        </div>
+    `;
+
     protected shouldUpdate = (changedProperties: PropertyValues) => {
         // Rerender if our config properties have changed (likely through template updates)
         if (
@@ -61,16 +71,6 @@ export class GoogleHomeGrid extends LitElement {
         // Do not rerender if anything else changes
         return false;
     };
-
-    protected render = (): TemplateResult | void => html`
-        <div id="wrapper">
-            <h2>${this.title}</h2>
-            ${this._renderDeviceCounter()}
-            <div class="grid">
-                ${this._renderCards()}
-            </div>
-        </div>
-    `;
 
     private _renderCards = (): TemplateResult => {
         const cards = this.cards?.map(card => createThing(card));

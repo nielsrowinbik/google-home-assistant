@@ -11,32 +11,65 @@ import {
 } from 'lit-element';
 
 import { GoogleHomeMenuConfig } from '../types';
+import { provideHass, subscribeTemplate } from '../util';
+
+const KEYS_TO_TEMPLATE: string[] = [];
 
 @customElement('google-home-menu')
 export class GoogleHomeMenu extends LitElement {
-    @property() public hass?: HomeAssistant;
-    @property() private _config?: GoogleHomeMenuConfig;
-    @property() private _cards?: LovelaceCard[];
+    // Properties provided by configuration
+    @property() public cards?: LovelaceCard[];
+
+    // Internal properties
+    @property() private hass?: HomeAssistant;
 
     public setConfig = (config: GoogleHomeMenuConfig) => {
-        if (!config || !config.cards || !Array.isArray(config.cards))
-            throw new Error('Invalid configuration');
+        // Check if a configuration is provided at all
+        if (!config) throw new Error('Invalid configuration');
 
-        this._config = config;
-        this._cards = config.cards.map(cardConfig => createThing(cardConfig));
+        // Provide hass object if unset
+        if (!this.hass) provideHass(this);
+
+        // Set properties from config
+        Object.keys(config).forEach(key => {
+            const value = config[key];
+
+            if (KEYS_TO_TEMPLATE.includes(key)) {
+                if (!this.hass) throw new Error('Hass is undefined!');
+
+                subscribeTemplate(this.hass?.connection, this, key, value);
+                return;
+            }
+
+            this[key] = config[key];
+        });
     };
-
-    protected shouldUpdate = (changedProperties: PropertyValues) =>
-        changedProperties.has('_config');
 
     protected render = (): TemplateResult | void => html`
         <div id="wrapper">
-            <h1>${this._config?.title}</h1>
+            <h1>${this.title}</h1>
             <div class="flex">
-                ${this._cards}
+                ${this._renderCards()}
             </div>
         </div>
     `;
+
+    protected shouldUpdate = (changedProperties: PropertyValues) => {
+        // Rerender if our config properties have changed (likely through template updates)
+        if (changedProperties.has('cards') || changedProperties.has('title'))
+            return true;
+
+        // Do not rerender if anything else changes
+        return false;
+    };
+
+    private _renderCards = (): TemplateResult => {
+        const cards = this.cards?.map(card => createThing(card));
+
+        return html`
+            ${cards}
+        `;
+    };
 
     static get styles(): CSSResult {
         return css`
