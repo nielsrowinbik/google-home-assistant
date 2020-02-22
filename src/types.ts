@@ -49,6 +49,11 @@ export interface GoogleHomeMenuConfig {
     title?: string;
 }
 
+export interface GoogleHomeSettingsConfig {
+    cards: LovelaceCardConfig[];
+    title?: string;
+}
+
 export interface GoogleHomeMenuItemConfig {
     entity: string;
     icon: string;
