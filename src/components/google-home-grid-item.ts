@@ -61,8 +61,7 @@ export class GoogleHomeGridItem extends LitElement {
         return html`
             <div id="wrapper">
                 <button @click=${this._handleButtonClick} type="button">
-                    ${this._renderAnimationOrIcon()}
-                    ${this._renderFriendlyName()}
+                    ${this._renderIcon()} ${this._renderFriendlyName()}
                 </button>
                 <ul class="actions">
                     ${this._renderActionButtons()}
@@ -156,16 +155,7 @@ export class GoogleHomeGridItem extends LitElement {
         });
     };
 
-    private _renderAnimationOrIcon = (): TemplateResult => {
-        if (this.animation)
-            return html`
-                <lottie-player
-                    autoplay="true"
-                    loop="true"
-                    src=${this.animation}
-                ></lottie-player>
-            `;
-
+    private _renderIcon = (): TemplateResult => {
         const entity = this.hass?.states[this.entity!];
         const icon = this.icon || entity?.attributes.icon;
         const isMdiIcon = icon?.startsWith('mdi:');
