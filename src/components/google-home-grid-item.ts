@@ -40,7 +40,7 @@ export class GoogleHomeGridItem extends LitElement {
         if (!this.hass) provideHass(this);
 
         // Set properties from config
-        Object.keys(config).forEach(key => {
+        Object.keys(config).forEach((key) => {
             const value = config[key];
 
             if (KEYS_TO_TEMPLATE.includes(key)) {
@@ -160,14 +160,9 @@ export class GoogleHomeGridItem extends LitElement {
         const icon = this.icon || entity?.attributes.icon;
         const isMdiIcon = icon?.startsWith('mdi:');
 
-        if (isMdiIcon)
-            return html`
-                <ha-icon icon=${icon}></ha-icon>
-            `;
+        if (isMdiIcon) return html` <ha-icon icon=${icon}></ha-icon> `;
 
-        return html`
-            <img src=${icon} />
-        `;
+        return html` <img src=${icon} /> `;
     };
 
     private _renderBadge = (): TemplateResult => {
@@ -175,9 +170,7 @@ export class GoogleHomeGridItem extends LitElement {
             const entity = this.hass?.states[this.entity!];
             const size = this.group_size || entity?.attributes.entity_id.length;
 
-            return html`
-                <span class="badge">${size}</span>
-            `;
+            return html` <span class="badge">${size}</span> `;
         }
         return html``;
     };
@@ -218,7 +211,7 @@ export class GoogleHomeGridItem extends LitElement {
             }
 
             #wrapper > button h4 {
-                color: #131313;
+                color: var(--primary-text-color, #131313);
                 font-family: 'Product Sans';
                 font-size: 1.15rem;
                 font-weight: 400;
@@ -240,23 +233,23 @@ export class GoogleHomeGridItem extends LitElement {
             }
 
             .actions button {
-                color: #4285f4;
+                color: var(--primary-color, #4285f4);
                 flex: 0;
                 font-weight: 500;
                 white-space: nowrap;
             }
 
             .actions span {
-                background-color: #dadce0;
+                background-color: var(--material-divider-color, #dadce0);
                 border-radius: 100%;
                 height: 4px;
                 width: 4px;
             }
 
             .badge {
-                border: 1px solid #dadce0;
+                border: 1px solid var(--material-divider-color, #dadce0);
                 border-radius: 100%;
-                color: #131313;
+                color: var(--primary-text-color, #131313);
                 font-family: 'Product Sans';
                 font-size: 1.1rem;
                 height: 24px;

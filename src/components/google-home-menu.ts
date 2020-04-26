@@ -31,7 +31,7 @@ export class GoogleHomeMenu extends LitElement {
         if (!this.hass) provideHass(this);
 
         // Set properties from config
-        Object.keys(config).forEach(key => {
+        Object.keys(config).forEach((key) => {
             const value = config[key];
 
             if (KEYS_TO_TEMPLATE.includes(key)) {
@@ -64,11 +64,9 @@ export class GoogleHomeMenu extends LitElement {
     };
 
     private _renderCards = (): TemplateResult => {
-        const cards = this.cards?.map(card => createThing(card));
+        const cards = this.cards?.map((card) => createThing(card));
 
-        return html`
-            ${cards}
-        `;
+        return html` ${cards} `;
     };
 
     static get styles(): CSSResult {
@@ -84,7 +82,7 @@ export class GoogleHomeMenu extends LitElement {
             }
 
             h1 {
-                color: #131313;
+                color: var(--primary-text-color, #131313);
                 font-family: 'Product Sans';
                 font-size: 32px;
                 font-weight: 400;

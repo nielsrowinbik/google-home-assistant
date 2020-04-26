@@ -39,7 +39,7 @@ export class GoogleHomeMenuItem extends LitElement {
         if (!this.hass) provideHass(this);
 
         // Set properties from config
-        Object.keys(config).forEach(key => {
+        Object.keys(config).forEach((key) => {
             const value = config[key];
 
             if (KEYS_TO_TEMPLATE.includes(key)) {
@@ -107,9 +107,7 @@ export class GoogleHomeMenuItem extends LitElement {
         const entity = this.hass?.states[this.entity!];
         const icon = this.icon || entity?.attributes.icon;
 
-        return html`
-            <ha-icon icon=${icon} style=${derivedStyles}></ha-icon>
-        `;
+        return html` <ha-icon icon=${icon} style=${derivedStyles}></ha-icon> `;
     };
 
     private _renderFriendlyName = (): TemplateResult => {
@@ -146,7 +144,7 @@ export class GoogleHomeMenuItem extends LitElement {
             }
 
             span {
-                color: #616870;
+                color: var(--secondary-text-color, #616870);
                 margin-top: 6px;
             }
         `;
