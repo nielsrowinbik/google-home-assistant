@@ -15,7 +15,8 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
