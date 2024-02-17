@@ -86,16 +86,11 @@ export class EntityCard extends LitElement {
     const icon = this._config.icon;
 
     const domain = computeDomain(entityId);
-    const prop = computeProperty(domain);
+    const [prop, range] = computePropertyAndRange(domain);
 
     let progress = 0;
-
-    if (prop) {
-      progress = convertRange(
-        stateObj.attributes[prop] ?? 0,
-        [0, 255],
-        [0, 100]
-      );
+    if (prop && range) {
+      progress = convertRange(stateObj.attributes[prop] ?? 0, range, [0, 100]);
     }
 
     return html`
@@ -199,15 +194,15 @@ export class EntityCard extends LitElement {
   }
 }
 
-function computeProperty(domain: string): string | undefined {
+function computePropertyAndRange(
+  domain: string
+): [string, [number, number]] | [] {
   switch (domain) {
-    case 'climate':
-      return 'temperature';
     case 'light':
-      return 'brightness';
+      return ['brightness', [0, 255]];
     case 'media_player':
-      return 'volume';
+      return ['volume_level', [0, 1]];
     default:
-      return;
+      return [];
   }
 }
