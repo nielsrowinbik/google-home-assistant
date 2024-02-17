@@ -8,40 +8,40 @@ Install the latest `google-home-assistant` release by getting the compiled `goog
 
 ```yaml
 resources:
-    - url: /local/js/google-home-assistant.js
-      type: module
+  - url: /local/js/google-home-assistant.js
+    type: module
 ```
 
 Set up your `ui-lovelace.yaml` with a panel view, and wrap the `google-home-assistant` cards in a `vertical-stack-card`.
 
 ```yaml
 views:
-    - title: My Home
-      icon: mdi:home-variant-outline
-      path: home
-      panel: true
-      cards:
-          - type: vertical-stack
+  - title: My Home
+    icon: mdi:home-variant-outline
+    path: home
+    panel: true
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:google-home-menu
+            title: My Home
             cards:
-                - type: custom:google-home-menu
-                  title: My Home
-                  cards:
-                      - type: custom:google-home-menu-item
-                        color: yellow
-                        entity: group.all_lights
-                        icon: mdi:lightbulb-outline
-                        name: Lights
-                - type: custom:google-home-grid
-                  title: Living Room
-                  cards:
-                      - type: custom:google-home-grid-item
-                        entity: media_player.living_room_tv
-                        icon: /local/icons/chromecast.svg
-                        name: Living Room TV
-                      - type: custom:google-home-grid-item
-                        entity: media_player.living_room_speakers
-                        icon: /local/icons/chromecast_audio.svg
-                        name: Living Room speakers
+              - type: custom:google-home-menu-item
+                color: yellow
+                entity: group.all_lights
+                icon: mdi:lightbulb-outline
+                name: Lights
+          - type: custom:google-home-grid
+            title: Living Room
+            cards:
+              - type: custom:google-home-grid-item
+                entity: media_player.living_room_tv
+                icon: /local/icons/chromecast.svg
+                name: Living Room TV
+              - type: custom:google-home-grid-item
+                entity: media_player.living_room_speakers
+                icon: /local/icons/chromecast_audio.svg
+                name: Living Room speakers
 ```
 
 All done! See below for each of the available [cards](#cards) and [getting the full experience](#getting-the-full-experience).
@@ -62,8 +62,8 @@ I cannot redistribute the Product Sans font, but it is possible to get your hand
 
 ```yaml
 resources:
-    - url: /link/to/product-sans.css
-      type: css
+  - url: /link/to/product-sans.css
+    type: css
 ```
 
 #### 3. Use the icons from the Google Home app
@@ -78,10 +78,10 @@ Again, I cannot redistribute the icons but it is possible to get them from the G
 
 The module enables the following cards (click for their configuration options):
 
--   [`google-home-menu`](#google-home-menu-configuration-options)
--   [`google-home-menu-item`](#google-home-menu-item-configuration-options)
--   [`google-home-grid`](#google-home-grid-configuration-options)
--   [`google-home-grid-tem`](#google-home-grid-item-configuration-options)
+- [`google-home-menu`](#google-home-menu-configuration-options)
+- [`google-home-menu-item`](#google-home-menu-item-configuration-options)
+- [`google-home-grid`](#google-home-grid-configuration-options)
+- [`google-home-grid-tem`](#google-home-grid-item-configuration-options)
 
 ### `google-home-menu` configuration options
 
