@@ -1,3 +1,4 @@
+import { computeDomain } from 'custom-card-helpers';
 import type { HomeAssistant, LovelaceCardEditor } from 'custom-card-helpers';
 import {
   css,
@@ -9,10 +10,12 @@ import {
 } from 'lit-element';
 
 import type { EntityCardConfig } from './entity-card-config';
-import { registerCustomCard } from '../../util';
+import { convertRange, registerCustomCard } from '../../util';
 import { CARD_NAME, EDITOR_CARD_NAME } from './const';
 import { nothing } from 'lit-html';
 import type { HassEntity } from 'home-assistant-js-websocket';
+import { SlideGesture } from '@nicufarmache/slide-gesture';
+import type { SlideGestureEvent } from '@nicufarmache/slide-gesture';
 
 registerCustomCard({
   type: CARD_NAME,
@@ -49,6 +52,23 @@ export class EntityCard extends LitElement {
     this._config = config;
   }
 
+  private slideGesture: any;
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    // this.addEventListener('contextmenu', this._handleContextMenu);
+    this.slideGesture = new SlideGesture(this, this._handlePointer.bind(this), {
+      touchActions: 'pan-y',
+      stopScrollDirection: 'horizontal',
+    });
+  }
+
+  disconnectedCallback(): void {
+    // this.removeEventListener('contextmenu', this._handleContextMenu);
+    this.slideGesture.removeListeners();
+    super.disconnectedCallback();
+  }
+
   protected render() {
     if (!this._config || !this.hass || !this._config.entity) {
       return nothing;
@@ -65,89 +85,129 @@ export class EntityCard extends LitElement {
     const name = this._config.name || stateObj.attributes.friendly_name || '';
     const icon = this._config.icon;
 
-    return html`<div id="wrapper">${name}</div>`;
+    const domain = computeDomain(entityId);
+    const prop = computeProperty(domain);
+
+    let progress = 0;
+
+    if (prop) {
+      progress = convertRange(
+        stateObj.attributes[prop] ?? 0,
+        [0, 255],
+        [0, 100]
+      );
+    }
+
+    return html`
+      <div id="wrapper" style="--slider-percent: ${progress}%">
+        <div id="slider"></div>
+        <ha-state-icon
+          id="icon"
+          .icon=${icon}
+          .state=${stateObj}
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+        ></ha-state-icon>
+        <div id="info">
+          <span class="name">${name}</span>
+          <span class="state">${stateObj.state}</span>
+        </div>
+      </div>
+    `;
   }
 
   static get styles() {
     return css`
-      button {
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        font-family: 'Product Sans';
-        padding: 0;
-        outline: none;
-        width: 100%;
+      :host {
+        --slider-percent: 79%;
       }
 
       #wrapper {
         display: flex;
-        flex-direction: column;
-        position: relative;
-      }
-
-      #wrapper > button img,
-      #wrapper > button svg {
-        height: 100%;
-        max-height: 50%;
-        max-width: 70px;
-        width: 100%;
-      }
-
-      #wrapper > button h4 {
-        color: var(--primary-text-color, #131313);
-        font-family: 'Product Sans';
-        font-size: 1.15rem;
-        font-weight: 400;
-        margin: 12px 0px 0px;
-      }
-
-      .actions {
-        align-items: center;
-        display: flex;
         flex-direction: row;
-        flex-wrap: nowrap;
-        height: 16px;
-        justify-content: space-around;
-        list-style: none;
-        max-width: 170px;
-        margin: 12px auto 0px;
-        padding: 0;
-        width: 100%;
+        padding: 12px;
+        height: 80px;
+        background-color: #ffefc9;
+        border-radius: 32px;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
       }
 
-      .actions button {
-        color: var(--primary-color, #4285f4);
-        flex: 0;
-        font-weight: 500;
-        white-space: nowrap;
-      }
-
-      .actions span {
-        background-color: var(--material-divider-color, #dadce0);
-        border-radius: 100%;
-        height: 4px;
-        width: 4px;
-      }
-
-      .badge {
-        border: 1px solid var(--material-divider-color, #dadce0);
-        border-radius: 100%;
-        color: var(--primary-text-color, #131313);
-        font-family: 'Product Sans';
-        font-size: 1.1rem;
-        height: 24px;
-        line-height: 24px;
+      #slider {
         position: absolute;
-        right: calc(50% - 64px);
-        text-align: center;
         top: 0;
-        width: 24px;
+        left: 0;
+        right: calc(100% - var(--slider-percent));
+        bottom: 0;
+        background-color: #ffe082;
+        z-index: 0;
+        transition: right 300ms ease;
       }
 
-      .badge:empty {
-        display: none;
+      #info,
+      #icon {
+        z-index: 0;
+      }
+
+      #icon {
+        margin-right: 12px;
+      }
+
+      #info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #info .state {
+        text-transform: capitalize;
       }
     `;
+  }
+
+  private _handlePointer(e: PointerEvent, extra: SlideGestureEvent) {
+    const entityId = this._config?.entity;
+
+    if (!entityId) return;
+
+    const domain = computeDomain(entityId);
+
+    // TODO: Support other domains as well
+    if (domain === 'light') {
+      switch (e.type) {
+        case 'pointerdown':
+          // TODO: Handle a tap, which is a pointerdown quickly followed by a pointerup, separately
+          console.log('Started sliding!');
+          break;
+
+        case 'pointermove':
+          console.log('Sliding!');
+          break;
+
+        case 'pointerup':
+          const stateObj = this.hass.states[entityId] as HassEntity | undefined;
+          const currentValue = stateObj?.attributes.brightness ?? 0;
+
+          // TODO: Compute which X coordinate we stopped at
+          // TODO: Convert that end X coordinate to progress from left to right
+          // TODO: Turn progress into new value
+
+          console.log('Stopped sliding!', { e, extra });
+          break;
+      }
+    }
+  }
+}
+
+function computeProperty(domain: string): string | undefined {
+  switch (domain) {
+    case 'climate':
+      return 'temperature';
+    case 'light':
+      return 'brightness';
+    case 'media_player':
+      return 'volume';
+    default:
+      return;
   }
 }

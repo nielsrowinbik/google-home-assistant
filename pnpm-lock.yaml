@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@nicufarmache/slide-gesture':
+    specifier: ^1.2.4
+    version: 1.2.4
   custom-card-helpers:
     specifier: ^1.5.0
     version: 1.9.0
@@ -616,6 +619,10 @@ packages:
     resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.2.0
+    dev: false
+
+  /@nicufarmache/slide-gesture@1.2.4:
+    resolution: {integrity: sha512-9Zq9fWln0MDZOlr3/fCEoXoIoCoI+3TWgjZdo/HCQDh8ghpOIv9QNQmXew+7psEVpl7vbd6O6sVW/z8N4y6QYQ==}
     dev: false
 
   /@rollup/pluginutils@3.1.0(rollup@2.79.1):
