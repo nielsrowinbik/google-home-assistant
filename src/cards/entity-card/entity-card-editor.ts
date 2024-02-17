@@ -2,12 +2,15 @@ import { HomeAssistant, fireEvent } from 'custom-card-helpers';
 import { customElement, state, property } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
 import { html, nothing, LitElement } from 'lit';
 import { EDITOR_CARD_NAME } from './const';
-import { EntityCardConfig } from './entity-card-config';
+import { EntityCardConfig, entityCardConfigSchema } from './entity-card-config';
+import type { HaFormSchema } from '../../shared/ha-form';
 
-const SCHEMA = [
+const SCHEMA: HaFormSchema[] = [
   { name: 'entity', selector: { entity: {} } },
   { name: 'name', selector: { text: {} } },
   { name: 'icon', selector: { icon: {} } },
+  { name: 'tap_action', selector: { 'ui-action': {} } },
+  { name: 'hold_action', selector: { 'ui-action': {} } },
 ];
 
 @customElement(EDITOR_CARD_NAME)
@@ -16,6 +19,7 @@ export class EntityCardEditor extends LitElement {
   @property() private hass!: HomeAssistant;
 
   public setConfig(config: EntityCardConfig) {
+    entityCardConfigSchema.parse(config);
     this._config = config;
   }
 

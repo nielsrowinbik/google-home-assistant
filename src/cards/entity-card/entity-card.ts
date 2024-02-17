@@ -17,7 +17,7 @@ registerCustomCard({
 
 @customElement(CARD_NAME)
 export class EntityCard extends LitElement {
-  @property() private hass!: HomeAssistant;
+  @property() hass!: HomeAssistant;
 
   static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import('./entity-card-editor');
@@ -43,20 +43,26 @@ export class EntityCard extends LitElement {
     this._config = config;
   }
 
-  private slideGesture: any;
+  private _slideGesture: any;
+  private _state: 'idle' | 'pressed' | 'dragging' | 'held' = 'idle';
+  private _holdTimer: any;
 
   connectedCallback(): void {
     super.connectedCallback();
-    // this.addEventListener('contextmenu', this._handleContextMenu);
-    this.slideGesture = new SlideGesture(this, this._handlePointer.bind(this), {
-      touchActions: 'pan-y',
-      stopScrollDirection: 'horizontal',
-    });
+    this.addEventListener('contextmenu', this._handleContextMenu);
+    this._slideGesture = new SlideGesture(
+      this,
+      this._handlePointer.bind(this),
+      {
+        touchActions: 'pan-y',
+        stopScrollDirection: 'horizontal',
+      }
+    );
   }
 
   disconnectedCallback(): void {
-    // this.removeEventListener('contextmenu', this._handleContextMenu);
-    this.slideGesture.removeListeners();
+    this.removeEventListener('contextmenu', this._handleContextMenu);
+    this._slideGesture.removeListeners();
     super.disconnectedCallback();
   }
 
@@ -147,36 +153,85 @@ export class EntityCard extends LitElement {
     `;
   }
 
+  private _handleContextMenu(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    return false;
+  }
+
   private _handlePointer(e: PointerEvent, extra: SlideGestureEvent) {
-    const entityId = this._config?.entity;
+    if (e.type === 'pointerdown') {
+      // Mark button as being pressed:
+      this._state = 'pressed';
+      // Set a timeout, after which the button will be marked als held:
+      this._holdTimer = setTimeout(() => {
+        this._state = 'held';
+        console.log('handling hold'); // TODO: Handle hold
+      }, 600); // TODO: Configure hold time
+    }
 
-    if (!entityId) return;
+    if (e.type === 'pointermove') {
+      // Ignore moves if we're pressing and not moving enough:
+      if (this._state === 'pressed' && Math.abs(extra.relativeX) < 5) return;
 
-    const domain = computeDomain(entityId);
+      // Also ignore moves if we're holding:
+      if (this._state === 'held') return;
 
-    // TODO: Support other domains as well
-    if (domain === 'light') {
-      switch (e.type) {
-        case 'pointerdown':
-          // TODO: Handle a tap, which is a pointerdown quickly followed by a pointerup, separately
-          console.log('Started sliding!');
-          break;
-
-        case 'pointermove':
-          console.log('Sliding!');
-          break;
-
-        case 'pointerup':
-          const stateObj = this.hass.states[entityId] as HassEntity | undefined;
-          const currentValue = stateObj?.attributes.brightness ?? 0;
-
-          // TODO: Compute which X coordinate we stopped at
-          // TODO: Convert that end X coordinate to progress from left to right
-          // TODO: Turn progress into new value
-
-          console.log('Stopped sliding!', { e, extra });
-          break;
+      // If moving enough, signal that we're dragging:
+      if (this._state !== 'dragging') {
+        this._state = 'dragging';
+        clearTimeout(this._holdTimer);
       }
+
+      // TODO: Update values as we're dragging, instead of just when we release
+    }
+
+    if (e.type === 'pointercancel') {
+      // Reset if pointer is cancelled:
+      clearTimeout(this._holdTimer);
+      this._state = 'idle';
+    }
+
+    if (e.type === 'pointerup') {
+      clearTimeout(this._holdTimer);
+
+      // If we're pressing when the pointer is released, handle it:
+      if (this._state === 'pressed') {
+        // TODO: Handle press
+        console.log('handling press');
+        this._state = 'idle';
+        return;
+      }
+
+      // If we're holding when the pointer is released, reset (we handle the hold
+      // the second we register it):
+      if (this._state === 'held') {
+        this._state = 'idle';
+        return;
+      }
+
+      // Compute the new value (in terms of progress from left to right):
+      const { left, width } = this.getBoundingClientRect();
+      const newValue = (e.clientX - left) / width;
+
+      // Compute the correct service call, if possible:
+      const entityId = this._config?.entity;
+      const [domain, service, data] = computeServiceCall(
+        computeDomain(entityId!),
+        newValue
+      );
+
+      // Call the service, if it exists:
+      if (!!domain && !!service && !!data) {
+        this.hass.callService(domain, service, {
+          ...data,
+          entity_id: entityId,
+        });
+      }
+
+      // Reset:
+      this._state = 'idle';
     }
   }
 }
@@ -189,6 +244,24 @@ function computePropertyAndRange(
       return ['brightness', [0, 255]];
     case 'media_player':
       return ['volume_level', [0, 1]];
+    default:
+      return [];
+  }
+}
+
+function computeServiceCall(
+  domain: string,
+  value: number
+): [domain: string, service: string, data: any] | [] {
+  switch (domain) {
+    case 'light':
+      return [
+        'light',
+        'turn_on',
+        { brightness: convertRange(value, [0, 1], [0, 255]) },
+      ];
+    case 'media_player':
+      return ['media_player', 'volume_set', { volume_level: value }];
     default:
       return [];
   }
