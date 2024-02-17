@@ -7,57 +7,24 @@ export const getDerivedStyles = (color?: Color) => {
   switch (color) {
     case 'blue':
       return css`
-        background-color: #e8f0fe;
-        border: 1px solid #e8f0fe;
-        color: #4285f4;
-      `;
-    case 'cyan':
-      return css`
-        background-color: #e4f7fb;
-        border: 1px solid #e4f7fb;
-        color: #12b5cb;
-      `;
-    case 'dark-green':
-      return css`
-        background-color: #dff1f0;
-        border: 1px solid #dff1f0;
-        color: #00887a;
-      `;
-    case 'green':
-      return css`
-        background-color: #e6f4ea;
-        border: 1px solid #e6f4ea;
-        color: #34a853;
-      `;
-    case 'indigo':
-      return css`
-        background-color: #e8eaf6;
-        border: 1px solid #e8eaf6;
-        color: #3f51b5;
-      `;
-    case 'purple':
-      return css`
-        background-color: #f3e8fd;
-        border: 1px solid #f3e8fd;
-        color: #ab47bc;
+        background-color: #dbe2fc;
+        color: #2355c8;
       `;
     case 'red':
       return css`
-        background-color: #fce8e6;
-        border: 1px solid #fce8e6;
-        color: #ea4335;
+        background-color: #f9dccf;
+        color: #9c4019;
       `;
     case 'yellow':
       return css`
-        background-color: #fef7e0;
-        border: 1px solid #fef7e0;
-        color: #af5c00;
+        background-color: #fcf0cd;
+        color: #6f5d1a;
       `;
     case 'none':
     default:
       return css`
-        color: #5f6268;
-        border: 1px solid #acb1b7;
+        background-color: #f3f6fb;
+        color: #1f1f1f;
       `;
   }
 };

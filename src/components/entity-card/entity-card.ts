@@ -10,7 +10,7 @@ import {
 } from 'lit-element';
 
 import type { EntityCardConfig } from './entity-card-config';
-import { convertRange, registerCustomCard } from '../../util';
+import { convertRange, getDerivedStyles, registerCustomCard } from '../../util';
 import { CARD_NAME, EDITOR_CARD_NAME } from './const';
 import { nothing } from 'lit-html';
 import type { HassEntity } from 'home-assistant-js-websocket';
@@ -113,20 +113,16 @@ export class EntityCard extends LitElement {
 
   static get styles() {
     return css`
-      :host {
-        --slider-percent: 79%;
-      }
-
       #wrapper {
         display: flex;
         flex-direction: row;
         padding: 12px;
         height: 80px;
-        background-color: #ffefc9;
         border-radius: 32px;
         align-items: center;
         position: relative;
         overflow: hidden;
+        ${getDerivedStyles('yellow')}
       }
 
       #slider {
