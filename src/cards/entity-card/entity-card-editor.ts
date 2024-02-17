@@ -1,6 +1,6 @@
 import { HomeAssistant, fireEvent } from 'custom-card-helpers';
-import { customElement, LitElement, state, property } from 'lit-element';
-import { html, nothing } from 'lit-html';
+import { customElement, state, property } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
+import { html, nothing, LitElement } from 'lit';
 import { EDITOR_CARD_NAME } from './const';
 import { EntityCardConfig } from './entity-card-config';
 

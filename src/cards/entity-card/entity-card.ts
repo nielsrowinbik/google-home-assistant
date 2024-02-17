@@ -1,18 +1,10 @@
 import { computeDomain } from 'custom-card-helpers';
 import type { HomeAssistant, LovelaceCardEditor } from 'custom-card-helpers';
-import {
-  css,
-  customElement,
-  html,
-  LitElement,
-  property,
-  state,
-} from 'lit-element';
-
+import { css, html, LitElement, nothing } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
 import type { EntityCardConfig } from './entity-card-config';
 import { convertRange, getDerivedStyles, registerCustomCard } from '../../util';
 import { CARD_NAME, EDITOR_CARD_NAME } from './const';
-import { nothing } from 'lit-html';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { SlideGesture } from '@nicufarmache/slide-gesture';
 import type { SlideGestureEvent } from '@nicufarmache/slide-gesture';
@@ -29,7 +21,6 @@ export class EntityCard extends LitElement {
 
   static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import('./entity-card-editor');
-
     return document.createElement(EDITOR_CARD_NAME) as LovelaceCardEditor;
   }
 

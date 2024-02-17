@@ -1,5 +1,5 @@
 import type { Connection } from 'home-assistant-js-websocket';
-import { css } from 'lit-element';
+import { css } from 'lit';
 
 import type { Color } from './types';
 

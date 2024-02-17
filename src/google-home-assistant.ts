@@ -1,1 +1,1 @@
-import './components/entity-card/entity-card';
+import './cards/entity-card/entity-card';
