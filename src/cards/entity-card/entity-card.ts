@@ -101,8 +101,8 @@ export class EntityCard extends LitElement {
           .stateObj=${stateObj}
         ></ha-state-icon>
         <div id="info">
-          <span class="name">${name}</span>
-          <span class="state">${stateObj.state}</span>
+          <span class="primary">${name}</span>
+          <span class="secondary">${stateObj.state}</span>
         </div>
       </div>
     `;
@@ -111,12 +111,14 @@ export class EntityCard extends LitElement {
   static get styles() {
     return css`
       #wrapper {
+        box-sizing: border-box;
         display: flex;
         flex-direction: row;
-        padding: 12px;
-        height: 80px;
-        border-radius: 32px;
         align-items: center;
+        gap: 14px;
+        padding: 20px 12px;
+        height: 88px;
+        border-radius: 28px;
         position: relative;
         overflow: hidden;
         ${getDerivedStyles('yellow')}
@@ -138,17 +140,22 @@ export class EntityCard extends LitElement {
         z-index: 0;
       }
 
-      #icon {
-        margin-right: 12px;
-      }
-
       #info {
         display: flex;
         flex-direction: column;
       }
 
-      #info .state {
+      #info .primary {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      #info .secondary {
         text-transform: capitalize;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 16px;
       }
     `;
   }

@@ -9,6 +9,7 @@ import type { DomainCardConfig } from './domain-card-config';
 import { getDerivedStyles, registerCustomCard } from '../../util';
 import { CARD_NAME, EDITOR_CARD_NAME } from './const';
 import pluralize from 'pluralize';
+import { styleMap } from 'lit/directives/style-map.js';
 
 registerCustomCard({
   type: CARD_NAME,
@@ -57,15 +58,20 @@ export class DomainCard extends LitElement {
     ).length;
 
     return html`
-      <div id="wrapper">
+      <div
+        id="wrapper"
+        style=${styleMap({
+          'background-color': getDerivedBackgroundColor(this._config?.domain),
+        })}
+      >
         <ha-state-icon
           id="icon"
           .icon=${icon}
           .hass=${this.hass}
         ></ha-state-icon>
         <div id="info">
-          <span class="name">${name}</span>
-          <span class="">${pluralize('device', devices, true)}</span>
+          <span class="primary">${name}</span>
+          <span class="secondary">${pluralize('device', devices, true)}</span>
         </div>
       </div>
     `;
@@ -73,37 +79,22 @@ export class DomainCard extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        width: 120px;
+        aspect-ratio: 1 / 1;
+      }
+
       #wrapper {
         display: flex;
         flex-direction: column;
-        padding: 12px;
-        width: 120px;
-        aspect-ratio: 1 / 1;
-        border-radius: 32px;
+        box-sizing: border-box;
+        padding: 16px;
+        height: 100%;
+        border-radius: 28px;
         align-items: flex-start;
+        justify-content: space-between;
         position: relative;
         overflow: hidden;
-        ${getDerivedStyles('yellow')}
-      }
-
-      #slider {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: calc(100% - var(--slider-percent));
-        bottom: 0;
-        background-color: #ffe082;
-        z-index: 0;
-        transition: right 300ms ease;
-      }
-
-      #info,
-      #icon {
-        z-index: 0;
-      }
-
-      #icon {
-        margin-right: 12px;
       }
 
       #info {
@@ -111,9 +102,33 @@ export class DomainCard extends LitElement {
         flex-direction: column;
       }
 
-      #info .state {
-        text-transform: capitalize;
+      #info .primary {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 20px;
+      }
+
+      #info .secondary {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 16px;
       }
     `;
+  }
+}
+
+function getDerivedBackgroundColor(domain: string) {
+  switch (domain) {
+    case 'camera':
+      return '#dbe2fc';
+
+    case 'climate':
+      return '#f9dccf';
+
+    case 'light':
+      return '#fcf0cd';
+
+    default:
+      return '#f3f6fb';
   }
 }

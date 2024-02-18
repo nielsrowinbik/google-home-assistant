@@ -6,7 +6,10 @@ import { DomainCardConfig, domainCardConfigSchema } from './domain-card-config';
 import type { HaFormSchema } from '../../shared/ha-form';
 
 const SCHEMA: HaFormSchema[] = [
-  { name: 'domain', selector: { select: { options: ['climate', 'light'] } } },
+  {
+    name: 'domain',
+    selector: { select: { options: ['camera', 'climate', 'light'] } },
+  },
   { name: 'name', selector: { text: {} } },
   { name: 'icon', selector: { icon: {} } },
   { name: 'tap_action', selector: { 'ui-action': {} } },
