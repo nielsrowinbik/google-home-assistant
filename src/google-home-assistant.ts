@@ -1,5 +1,2 @@
-import './components/google-home-grid-item';
-import './components/google-home-grid';
-import './components/google-home-menu-item';
-import './components/google-home-menu';
-import './components/google-home-settings';
+import './cards/domain-card/domain-card';
+import './cards/entity-card/entity-card';
