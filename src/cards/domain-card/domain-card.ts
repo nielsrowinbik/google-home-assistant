@@ -3,7 +3,7 @@ import {
   type LovelaceCardEditor,
 } from 'custom-card-helpers';
 import { css, html, LitElement, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
+import { customElement, property, state } from 'lit/decorators.js';
 import type { DomainCardConfig } from './domain-card-config';
 import {
   registerCustomCard,

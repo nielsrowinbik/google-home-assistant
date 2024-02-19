@@ -1,13 +1,14 @@
 import { computeDomain } from 'custom-card-helpers';
 import type { HomeAssistant, LovelaceCardEditor } from 'custom-card-helpers';
 import { css, html, LitElement, nothing } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
+import { customElement, property, state } from 'lit/decorators.js';
 import type { EntityCardConfig } from './entity-card-config';
-import { convertRange, getDerivedStyles, registerCustomCard } from '../../util';
+import { convertRange, registerCustomCard } from '../../util';
 import { CARD_NAME, EDITOR_CARD_NAME } from './const';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { SlideGesture } from '@nicufarmache/slide-gesture';
 import type { SlideGestureEvent } from '@nicufarmache/slide-gesture';
+import { styleMap } from 'lit/directives/style-map.js';
 
 registerCustomCard({
   type: CARD_NAME,
@@ -91,7 +92,13 @@ export class EntityCard extends LitElement {
     }
 
     return html`
-      <div id="wrapper" style="--slider-percent: ${progress}%">
+      <div
+        id="wrapper"
+        style=${styleMap({
+          '--slider-percent': `${progress}%`,
+          'background-color': getDerivedBackgroundColor(domain),
+        })}
+      >
         <div id="slider"></div>
         <ha-state-icon
           id="icon"
@@ -121,7 +128,6 @@ export class EntityCard extends LitElement {
         border-radius: 28px;
         position: relative;
         overflow: hidden;
-        ${getDerivedStyles('yellow')}
       }
 
       #slider {
@@ -271,5 +277,21 @@ function computeServiceCall(
       return ['media_player', 'volume_set', { volume_level: value }];
     default:
       return [];
+  }
+}
+
+function getDerivedBackgroundColor(domain: string) {
+  switch (domain) {
+    case 'camera':
+      return '#dbe2fc';
+
+    case 'climate':
+      return '#f9dccf';
+
+    case 'light':
+      return '#fcf0cd';
+
+    default:
+      return '#f3f6fb';
   }
 }

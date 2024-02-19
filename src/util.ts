@@ -1,33 +1,4 @@
 import type { Connection, UnsubscribeFunc } from 'home-assistant-js-websocket';
-import { css } from 'lit';
-
-import type { Color } from './types';
-
-export const getDerivedStyles = (color?: Color) => {
-  switch (color) {
-    case 'blue':
-      return css`
-        background-color: #dbe2fc;
-        color: #2355c8;
-      `;
-    case 'red':
-      return css`
-        background-color: #f9dccf;
-        color: #9c4019;
-      `;
-    case 'yellow':
-      return css`
-        background-color: #fcf0cd;
-        color: #6f5d1a;
-      `;
-    case 'none':
-    default:
-      return css`
-        background-color: #f3f6fb;
-        color: #1f1f1f;
-      `;
-  }
-};
 
 export function convertRange(
   value: number,
