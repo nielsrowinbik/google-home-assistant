@@ -1,21 +1,30 @@
 import {
-  computeDomain,
   type HomeAssistant,
   type LovelaceCardEditor,
 } from 'custom-card-helpers';
 import { css, html, LitElement, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js'; // `.js` extension needed, see: https://github.com/material-components/material-web/issues/3395
 import type { DomainCardConfig } from './domain-card-config';
-import { getDerivedStyles, registerCustomCard } from '../../util';
-import { CARD_NAME, EDITOR_CARD_NAME } from './const';
-import pluralize from 'pluralize';
+import {
+  registerCustomCard,
+  type RenderTemplateResult,
+  subscribeRenderTemplate,
+} from '../../util';
+import {
+  CARD_NAME,
+  EDITOR_CARD_NAME,
+  TEMPLATE_KEYS as TEMPLATE_KEYS,
+} from './const';
 import { styleMap } from 'lit/directives/style-map.js';
+import type { UnsubscribeFunc } from 'home-assistant-js-websocket';
 
 registerCustomCard({
   type: CARD_NAME,
   name: 'Google Home Domain Card',
   description: 'Card for all entities',
 });
+
+type TemplateKey = (typeof TEMPLATE_KEYS)[number];
 
 @customElement(CARD_NAME)
 export class DomainCard extends LitElement {
@@ -29,20 +38,61 @@ export class DomainCard extends LitElement {
   static getStubConfig() {
     return {
       type: `custom:${CARD_NAME}`,
-      domain: 'light',
-      name: 'Lighting',
+      domain: 'light', // TODO: Replace with color picker
+      primary: 'Lighting',
+      secondary:
+        "{{ states.light|list|count }} {{ iif(states.light|list|count == 1, 'light', 'lights') }}",
       icon: 'mdi:lightbulb-outline',
     };
   }
 
   @state() private _config?: DomainCardConfig;
 
+  @state() private _templateResults: Partial<
+    Record<TemplateKey, RenderTemplateResult | undefined>
+  > = {};
+
+  @state() private _unsubRenderTemplates: Map<
+    TemplateKey,
+    Promise<UnsubscribeFunc>
+  > = new Map();
+
   getCardSize(): number | Promise<number> {
     return 1;
   }
 
   setConfig(config: DomainCardConfig): void {
+    TEMPLATE_KEYS.forEach((key) => {
+      if (
+        this._config?.[key] !== config[key] ||
+        this._config?.domain != config.domain
+      ) {
+        this._tryDisconnectKey(key);
+      }
+    });
+
     this._config = config;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._tryConnect();
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._tryDisconnect();
+  }
+
+  public isTemplate(key: TemplateKey) {
+    const value = this._config?.[key];
+    return value?.includes('{');
+  }
+
+  private getValue(key: TemplateKey) {
+    return this.isTemplate(key)
+      ? this._templateResults[key]?.result?.toString()
+      : this._config?.[key];
   }
 
   protected render() {
@@ -50,18 +100,15 @@ export class DomainCard extends LitElement {
       return nothing;
     }
 
-    const name = this._config.name || '';
-    const icon = this._config.icon;
-
-    const devices = Object.keys(this.hass.states).filter(
-      (entityId) => computeDomain(entityId) === this._config?.domain
-    ).length;
+    const primary = this.getValue('primary');
+    const secondary = this.getValue('secondary');
+    const icon = this.getValue('icon');
 
     return html`
       <div
         id="wrapper"
         style=${styleMap({
-          'background-color': getDerivedBackgroundColor(this._config?.domain),
+          ...getColors(this._config?.domain),
         })}
       >
         <ha-state-icon
@@ -70,11 +117,89 @@ export class DomainCard extends LitElement {
           .hass=${this.hass}
         ></ha-state-icon>
         <div id="info">
-          <span class="primary">${name}</span>
-          <span class="secondary">${pluralize('device', devices, true)}</span>
+          <span class="primary">${primary}</span>
+          <span class="secondary">${secondary}</span>
         </div>
       </div>
     `;
+  }
+
+  private async _tryConnect() {
+    TEMPLATE_KEYS.forEach((key) => {
+      this._tryConnectKey(key);
+    });
+  }
+
+  private async _tryConnectKey(key: TemplateKey) {
+    if (
+      this._unsubRenderTemplates.get(key) !== undefined ||
+      !this.hass ||
+      !this._config ||
+      !this.isTemplate(key)
+    ) {
+      return;
+    }
+
+    try {
+      const sub = subscribeRenderTemplate(
+        // @ts-ignore
+        this.hass.connection,
+        (result) => {
+          this._templateResults = {
+            ...this._templateResults,
+            [key]: result,
+          };
+        },
+        {
+          template: this._config?.[key] ?? '',
+          strict: true,
+        }
+      );
+      this._unsubRenderTemplates.set(key, sub);
+      await sub;
+    } catch (error) {
+      console.log(error);
+
+      const result = {
+        result: this._config[key] ?? '',
+        listeners: {
+          all: false,
+          domains: [],
+          entities: [],
+          time: false,
+        },
+      };
+      this._templateResults = {
+        ...this._templateResults,
+        [key]: result,
+      };
+      this._unsubRenderTemplates.delete(key);
+    }
+  }
+
+  private async _tryDisconnect(): Promise<void> {
+    TEMPLATE_KEYS.forEach((key) => {
+      this._tryDisconnectKey(key);
+    });
+  }
+
+  private async _tryDisconnectKey(key: TemplateKey): Promise<void> {
+    const unsubRenderTemplate = this._unsubRenderTemplates.get(key);
+    if (!unsubRenderTemplate) {
+      return;
+    }
+
+    try {
+      const unsub = await unsubRenderTemplate;
+      unsub();
+      this._unsubRenderTemplates.delete(key);
+    } catch (err: any) {
+      if (err.code === 'not_found' || err.code === 'template_error') {
+        // If we get here, the connection was probably already closed. Ignore.
+      } else {
+        throw err;
+      }
+    }
   }
 
   static get styles() {
@@ -117,18 +242,18 @@ export class DomainCard extends LitElement {
   }
 }
 
-function getDerivedBackgroundColor(domain: string) {
+function getColors(domain: string) {
   switch (domain) {
     case 'camera':
-      return '#dbe2fc';
+      return { 'background-color': '#edf0ff' };
 
     case 'climate':
-      return '#f9dccf';
+      return { 'background-color': '#ffede6' };
 
     case 'light':
-      return '#fcf0cd';
+      return { 'background-color': '#fcf0cd' };
 
     default:
-      return '#f3f6fb';
+      return { 'background-color': '#f3f6fb' };
   }
 }

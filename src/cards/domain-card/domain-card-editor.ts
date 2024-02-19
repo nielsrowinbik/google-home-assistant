@@ -8,10 +8,13 @@ import type { HaFormSchema } from '../../shared/ha-form';
 const SCHEMA: HaFormSchema[] = [
   {
     name: 'domain',
-    selector: { select: { options: ['camera', 'climate', 'light'] } },
+    selector: {
+      select: { options: ['camera', 'climate', 'light'], mode: 'dropdown' },
+    },
   },
-  { name: 'name', selector: { text: {} } },
-  { name: 'icon', selector: { icon: {} } },
+  { name: 'primary', selector: { template: {} } },
+  { name: 'secondary', selector: { template: {} } },
+  { name: 'icon', selector: { template: {} } },
   { name: 'tap_action', selector: { 'ui-action': {} } },
   { name: 'hold_action', selector: { 'ui-action': {} } },
 ];

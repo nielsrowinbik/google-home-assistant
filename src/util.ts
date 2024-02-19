@@ -1,4 +1,4 @@
-import type { Connection } from 'home-assistant-js-websocket';
+import type { Connection, UnsubscribeFunc } from 'home-assistant-js-websocket';
 import { css } from 'lit';
 
 import type { Color } from './types';
@@ -37,21 +37,33 @@ export function convertRange(
   return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 
-export const subscribeTemplate = (
-  connection: Connection,
-  component: any,
-  field: string,
-  template: string
-) =>
-  connection.subscribeMessage(
-    ({ result }: any) => {
-      component[field] = result;
-    },
-    {
-      type: 'render_template',
-      template,
-    }
-  );
+export interface RenderTemplateResult {
+  result: string;
+  listeners: TemplateListeners;
+}
+
+interface TemplateListeners {
+  all: boolean;
+  domains: string[];
+  entities: string[];
+  time: boolean;
+}
+
+export const subscribeRenderTemplate = (
+  conn: Connection,
+  onChange: (result: RenderTemplateResult) => void,
+  params: {
+    template: string;
+    entity_ids?: string | string[];
+    variables?: Record<string, unknown>;
+    timeout?: number;
+    strict?: boolean;
+  }
+): Promise<UnsubscribeFunc> =>
+  conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {
+    type: 'render_template',
+    ...params,
+  });
 
 export function registerCustomCard(params: {
   type: string;
